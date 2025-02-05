@@ -6,6 +6,7 @@
 
 ![OmniTools](https://img.shields.io/badge/Platform-Windows-blue.svg)
 ![OmniTools version](https://img.shields.io/badge/Version-0.6-orange.svg)
+![C#](https://img.shields.io/badge/Language-C%23-%23239120)
 ![License](https://img.shields.io/badge/License-MIT-lightgrey.svg)
 
 **OmniTools** est un utilitaire Windows qui facilite l’exécution de scripts variés (installateurs, activateurs, outils de dépannage, etc.). Il vous permet de :
