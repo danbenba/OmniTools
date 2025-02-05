@@ -1,0 +1,2 @@
+D:\Software\Development\C#\OmniTools\MainGUI\publish\OmniTools.pdb
+D:\Software\Development\C#\OmniTools\MainGUI\publish\OmniTools.exe

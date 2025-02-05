@@ -1,0 +1,7 @@
+D:\Software\Development\C#\OmniTools\MainGUI\bin\Release\net9.0-windows\publish\OmniTools.exe
+D:\Software\Development\C#\OmniTools\MainGUI\bin\Release\net9.0-windows\publish\OmniTools.dll
+D:\Software\Development\C#\OmniTools\MainGUI\bin\Release\net9.0-windows\publish\OmniTools.deps.json
+D:\Software\Development\C#\OmniTools\MainGUI\bin\Release\net9.0-windows\publish\OmniTools.runtimeconfig.json
+D:\Software\Development\C#\OmniTools\MainGUI\bin\Release\net9.0-windows\publish\OmniTools.pdb
+D:\Software\Development\C#\OmniTools\MainGUI\bin\Release\net9.0-windows\publish\System.ServiceProcess.ServiceController.dll
+D:\Software\Development\C#\OmniTools\MainGUI\bin\Release\net9.0-windows\publish\runtimes\win\lib\net9.0\System.ServiceProcess.ServiceController.dll

@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "mjdFrXSErlQ=",
+  "success": true,
+  "projectFilePath": "D:\\Software\\Development\\C#\\OmniTools\\MainGUI\\OmniTools.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Dany\\.nuget\\packages\\system.diagnostics.eventlog\\9.0.0\\system.diagnostics.eventlog.9.0.0.nupkg.sha512",
+    "C:\\Users\\Dany\\.nuget\\packages\\system.serviceprocess.servicecontroller\\9.0.0\\system.serviceprocess.servicecontroller.9.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}
