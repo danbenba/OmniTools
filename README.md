@@ -1,4 +1,8 @@
-# OmniTools 🚀
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/32562bf5-0f0c-4c92-8b55-206fd7c33975" alt="Icon" width="128" height="128">
+</p>
+<h1 align="center" style="margin: 0;">OmniTools</h1>
+
 
 ![OmniTools](https://img.shields.io/badge/Platform-Windows-blue.svg)
 ![OmniTools version](https://img.shields.io/badge/Version-0.6-orange.svg)
