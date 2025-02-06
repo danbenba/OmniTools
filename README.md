@@ -19,9 +19,10 @@
 - Obtenir des informations système détaillées (version Windows, version .NET, privilèges administrateur, etc.).
 
 > [!CAUTION]
-> Je ne serai pas responsable des dommages causés par l'utilisation d'OmniTools !
+> **Je ne serai pas responsable des dommages causés par l'utilisation d'OmniTools !**
 
-> **Note :** Cet outil est avant tout conçu pour un usage sous Windows **uniquement**. Son utilisation sous d’autres plateformes n’est pas supportée.
+> [!NOTE]
+> Cet outil est avant tout conçu pour un usage sous Windows **uniquement**. Son utilisation sous d’autres plateformes n’est pas supportée.
 
 ---
 
