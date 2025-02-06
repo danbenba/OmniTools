@@ -3,11 +3,12 @@
 </p>
 <h1 align="center" style="margin: 0;">OmniTools</h1>
 
-
-![OmniTools](https://img.shields.io/badge/Platform-Windows-blue.svg)
-![OmniTools version](https://img.shields.io/badge/Version-0.6-orange.svg)
-![C#](https://img.shields.io/badge/Language-C%23-%23239120)
-![License](https://img.shields.io/badge/License-MIT-lightgrey.svg)
+<p align="center">
+  <img src="https://img.shields.io/badge/Platform-Windows-blue.svg" alt="OmniTools">
+  <img src="https://img.shields.io/badge/Version-0.6-orange.svg" alt="OmniTools version">
+  <img src="https://img.shields.io/badge/Language-C%23-%23239120" alt="C#">
+  <img src="https://img.shields.io/badge/License-MIT-lightgrey.svg" alt="License">
+</p>
 
 **OmniTools** est un utilitaire Windows qui facilite l’exécution de scripts variés (installateurs, activateurs, outils de dépannage, etc.). Il vous permet de :
 
