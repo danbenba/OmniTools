@@ -198,7 +198,14 @@ En complément, j’ai également conçu des scripts pour adapter certains progr
 
 *OmniTools* est le successeur de *WinActTool*, qui souffrait de nombreux problèmes : manque d’optimisation, bugs fréquents et absence de code open-source. Cette nouvelle version est bien plus stable et performante, une véritable évolution (WinActTool 4.0). 🚀  
 
-### 🔗 **Liens des scripts adaptés**  
+### 🖇️ **Liens vers les scripts d'origine**  
+
+- [🌐 UniGetUI](https://github.com/marticliment/UniGetUI) – Téléchargeur d’applications pour Windows (Winget, Choco) 
+- [🔌 Rufus](https://github.com/pbatard/rufus) – Outil fiable pour formater les clés USB 
+- [🔄 Windows Update Blocker](https://www.sordum.org/9470/windows-update-blocker-v1-8/) – Gestionnaire de mises à jour Windows
+
+
+### 🔗 **Liens des scripts adaptés pour OmniTools**  
 
 - [🔧 Troubleshoot (RepairKit)](https://github.com/danbenba/OmniTools.Troubleshoot) – Outil de réparation Windows  
 - [⚙️ Windows Tweaks (Winutil)](https://github.com/danbenba/OmniTools.WindowsTweaks) – Outil de personnalisation et d’optimisation de Windows  
