@@ -67,6 +67,14 @@ namespace OmniTools
         }
 
         /// <summary>
+        /// Balise d'annulation de téléchargement
+        /// </summary>
+        public static void DownloadCanceledLog(string message)
+        {
+            MainFormInstance?.AddLog($" {message}", Color.Red);
+        }
+
+        /// <summary>
         /// Efface le contenu du RichTextBox des logs.
         /// </summary>
         public static void Clear()

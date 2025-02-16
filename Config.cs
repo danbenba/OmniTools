@@ -72,6 +72,7 @@ namespace OmniTools
                     LocalFileName = "Disabled.OmniTools.bat",
                     IsEnabled = false  // Désactiver cet élément
                 },
+
                 // Installers
                 new ScriptItem
                 {
@@ -87,15 +88,21 @@ namespace OmniTools
                 },
                 new ScriptItem
                 {
-                    DisplayName = "Edition Changer (Windows - Office) - INSTABLE",
+                    DisplayName = "Edition Changer (Windows - Office)",
                     DownloadUrl = "https://github.com/danbenba/OmniTools.EditionChanger/raw/refs/heads/project/EditionChanger.exe",
                     LocalFileName = "EditionChanger.OmniTools.exe"
                 },
                 new ScriptItem
                 {
-                    DisplayName = "Driver Installer",
-                    DownloadUrl = "https://github.com/danbenba/OmniTools.DriverInstaller/releases/download/lasted/DriverInstaller.exe",
-                    LocalFileName = "DriverInstaller.OmniTools.exe"
+                    DisplayName = "UniGetUI (Package Installer)",
+                    DownloadUrl = "https://github.com/marticliment/UniGetUI/releases/download/3.1.6/UniGetUI.Installer.exe",
+                    LocalFileName = "UniGetUI.OmniTools.exe"
+                },
+                new ScriptItem
+                {
+                    DisplayName = "Rufus (4.6.2208)",
+                    DownloadUrl = "https://github.com/pbatard/rufus/releases/download/v4.6/rufus-4.6p.exe",
+                    LocalFileName = "Rufus.OmniTools.exe"
                 },
 
                 // Activators
@@ -120,7 +127,7 @@ namespace OmniTools
                     IsEnabled = false  // Désactiver cet élément
                 },
                 
-                // Tweak and Troubleshoot
+                // Tweak, UiGetUI and Troubleshoot
                 new ScriptItem
                 {
                     DisplayName = "Windows Tweak",
@@ -132,6 +139,12 @@ namespace OmniTools
                     DisplayName = "Defender Tool",
                     DownloadUrl = "https://github.com/danbenba/DefenderTool/raw/refs/heads/project/publish/DefenderTool.exe",
                     LocalFileName = "DefenderTool.OmniTools.exe"
+                },
+                new ScriptItem
+                {
+                    DisplayName = "Driver Installer",
+                    DownloadUrl = "https://github.com/danbenba/OmniTools.DriverInstaller/releases/download/lasted/DriverInstaller.exe",
+                    LocalFileName = "DriverInstaller.OmniTools.exe"
                 },
                 new ScriptItem
                 {
@@ -155,6 +168,13 @@ namespace OmniTools
                     DownloadUrl = "https://github.com/danbenba/ElevationExploit/releases/download/0.4/elevation.exe",
                     LocalFileName = "ElevationExploit.OmniTools.exe",
                     DefaultArguments = "cmd.exe -t"
+                },
+                new ScriptItem
+                {
+                    DisplayName = "Windows Update Blocker",
+                    DownloadUrl = "https://github.com/danbenba/OmniTools.WinUpdatesBlocker/raw/refs/heads/project/Wub_x64.exe",
+                    LocalFileName = "WinUpdateBLocker.OmniTools.exe",
+                    DefaultArguments = ""
                 },
                 new ScriptItem
                 {

@@ -11,23 +11,22 @@ namespace OmniTools
     internal static class Program
     {
         // Version locale de l’application
-        private const string CurrentVersion = "0.6";
+        private const string CurrentVersion = "0.7";
         // Langue courante
-        private const string CurrentLanguage = "FR-fr";
+        private const string CurrentLanguage = "fr-FR";
 
         // URL où se trouve la dernière version sous forme de texte (par ex. "0.7")
         private const string VersionUrl = "https://raw.githubusercontent.com/danbenba/OmniTools/refs/heads/project/version";
         
         // URL pointant vers le nouvel exécutable (fichier .exe) à télécharger
-        // À adapter selon votre hébergement (GitHub Releases, serveur privé, etc.)
         private const string DownloadExeUrl = "https://github.com/danbenba/OmniTools/releases/download/lasted/OmniTools.exe";
         
         // URL de la page release (si vous voulez rediriger l’utilisateur en cas d’erreur ou autre)
         private const string ReleaseUrl = "https://github.com/danbenba/OmniTools/releases/latest";
 
-        // URL pour la veriffication de la connection internet
+        // URL pour la vérification de la connection internet
         private const string CheckURL = "https://www.google.com";
-
+        
         // Expose également la version et la langue en public
         public const string Version = CurrentVersion;
         public const string Language = CurrentLanguage;
@@ -38,15 +37,16 @@ namespace OmniTools
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            // Lance la SplashForm
+            // Lance la SplashForm (ou la fenêtre principale)
             Application.Run(new SplashForm());
         }
 
         /// <summary>
         /// Vérifie s’il existe une nouvelle version en comparant avec un fichier distant.
-        /// Si oui, propose de télécharger la nouvelle version via un message personnalisé.
+        /// Si l'appel provient de la fenêtre AboutForm (showNotificationWhenUpToDate == true) et qu'il n'y a pas de mise à jour,
+        /// affiche une notification. Sinon, affiche la popup de mise à jour si une nouvelle version est détectée.
         /// </summary>
-        public static async Task<bool> CheckForUpdates()
+        public static async Task<bool> CheckForUpdates(bool showNotificationWhenUpToDate = false)
         {
             try
             {
@@ -56,12 +56,16 @@ namespace OmniTools
 
                 if (latestVersion == CurrentVersion)
                 {
-                    // Déjà à jour
+                    // Application déjà à jour
+                    if (showNotificationWhenUpToDate)
+                    {
+                        AboutForm.ShowNotification("Aucune mise à jour n'est disponible.");
+                    }
                     return true;
                 }
                 else
                 {
-                    // Nouvelle version trouvée
+                    // Nouvelle version détectée, on affiche la popup de mise à jour
                     using (var form = new UpdateForm(latestVersion))
                     {
                         var result = form.ShowDialog();
@@ -91,8 +95,6 @@ namespace OmniTools
                 return true;
             }
         }
-
-
 
         /// <summary>
         /// Vérifie si une URL est joignable en envoyant une requête HEAD.
@@ -179,17 +181,9 @@ namespace OmniTools
             }
 
             // Génération d’un script .bat pour remplacer l’EXE actuel
-            // (Impossible de supprimer ou de remplacer un fichier en cours d’utilisation)
-            // On va donc lancer ce script .bat qui va :
-            // 1) Attendre 1-2 secondes
-            // 2) Supprimer l’EXE actuel
-            // 3) Renommer le nouveau fichier
-            // 4) Lancer le nouveau .exe
-            // 5) Supprimer le .bat
             string batFilePath = Path.Combine(Path.GetTempPath(), "OmniTools_Updater.bat");
 
-            // Petite temporisation via `ping 127.0.0.1 -n 2`
-            // Le `-n 2` attend environ 2 secondes.
+            // Temporisation pour permettre la fermeture de l’application
             string batContent = $@"
             @echo off
             ping 127.0.0.1 -n 2 > nul

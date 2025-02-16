@@ -3,10 +3,10 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net9.0-windows</TargetFramework>
+    <ApplicationIcon>Resources\images\icon.ico</ApplicationIcon>
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
-    <ApplicationIcon>Resources\images\icon.ico</ApplicationIcon>
   </PropertyGroup>
   
   <ItemGroup>

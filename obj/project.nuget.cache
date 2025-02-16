@@ -1,11 +1,15 @@
 {
   "version": 2,
-  "dgSpecHash": "mjdFrXSErlQ=",
+  "dgSpecHash": "aHQyAAVw+JQ=",
   "success": true,
   "projectFilePath": "D:\\Software\\Development\\C#\\OmniTools\\MainGUI\\OmniTools.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\Dany\\.nuget\\packages\\microsoft.net.illink.tasks\\9.0.2\\microsoft.net.illink.tasks.9.0.2.nupkg.sha512",
     "C:\\Users\\Dany\\.nuget\\packages\\system.diagnostics.eventlog\\9.0.0\\system.diagnostics.eventlog.9.0.0.nupkg.sha512",
-    "C:\\Users\\Dany\\.nuget\\packages\\system.serviceprocess.servicecontroller\\9.0.0\\system.serviceprocess.servicecontroller.9.0.0.nupkg.sha512"
+    "C:\\Users\\Dany\\.nuget\\packages\\system.serviceprocess.servicecontroller\\9.0.0\\system.serviceprocess.servicecontroller.9.0.0.nupkg.sha512",
+    "C:\\Users\\Dany\\.nuget\\packages\\microsoft.netcore.app.runtime.win-x64\\9.0.2\\microsoft.netcore.app.runtime.win-x64.9.0.2.nupkg.sha512",
+    "C:\\Users\\Dany\\.nuget\\packages\\microsoft.windowsdesktop.app.runtime.win-x64\\9.0.2\\microsoft.windowsdesktop.app.runtime.win-x64.9.0.2.nupkg.sha512",
+    "C:\\Users\\Dany\\.nuget\\packages\\microsoft.aspnetcore.app.runtime.win-x64\\9.0.2\\microsoft.aspnetcore.app.runtime.win-x64.9.0.2.nupkg.sha512"
   ],
   "logs": []
 }

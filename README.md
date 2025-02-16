@@ -3,11 +3,12 @@
 </p>
 <h1 align="center" style="margin: 0;">OmniTools</h1>
 
-
-![OmniTools](https://img.shields.io/badge/Platform-Windows-blue.svg)
-![OmniTools version](https://img.shields.io/badge/Version-0.6-orange.svg)
-![C#](https://img.shields.io/badge/Language-C%23-%23239120)
-![License](https://img.shields.io/badge/License-MIT-lightgrey.svg)
+<p align="center">
+  <img src="https://img.shields.io/badge/Platform-Windows-blue.svg" alt="OmniTools">
+  <img src="https://img.shields.io/badge/Version-0.6-orange.svg" alt="OmniTools version">
+  <img src="https://img.shields.io/badge/Language-C%23-%23239120" alt="C#">
+  <img src="https://img.shields.io/badge/License-MIT-lightgrey.svg" alt="License">
+</p>
 
 **OmniTools** est un utilitaire Windows qui facilite l’exécution de scripts variés (installateurs, activateurs, outils de dépannage, etc.). Il vous permet de :
 
@@ -18,9 +19,10 @@
 - Obtenir des informations système détaillées (version Windows, version .NET, privilèges administrateur, etc.).
 
 > [!CAUTION]
-> Je ne serai pas responsable des dommages causés par l'utilisation d'OmniTools !
+> **Je ne serai pas responsable des dommages causés par l'utilisation d'OmniTools !**
 
-> **Note :** Cet outil est avant tout conçu pour un usage sous Windows **uniquement**. Son utilisation sous d’autres plateformes n’est pas supportée.
+> [!NOTE]
+> Cet outil est avant tout conçu pour un usage sous Windows **uniquement**. Son utilisation sous d’autres plateformes n’est pas supportée.
 
 ---
 
@@ -196,7 +198,14 @@ En complément, j’ai également conçu des scripts pour adapter certains progr
 
 *OmniTools* est le successeur de *WinActTool*, qui souffrait de nombreux problèmes : manque d’optimisation, bugs fréquents et absence de code open-source. Cette nouvelle version est bien plus stable et performante, une véritable évolution (WinActTool 4.0). 🚀  
 
-### 🔗 **Liens des scripts adaptés**  
+### 🖇️ **Liens vers les scripts d'origine**  
+
+- [🌐 UniGetUI](https://github.com/marticliment/UniGetUI) – Téléchargeur d’applications pour Windows (Winget, Choco) 
+- [🔌 Rufus](https://github.com/pbatard/rufus) – Outil fiable pour formater les clés USB 
+- [🔄 Windows Update Blocker](https://www.sordum.org/9470/windows-update-blocker-v1-8/) – Gestionnaire de mises à jour Windows
+
+
+### 🔗 **Liens des scripts adaptés pour OmniTools**  
 
 - [🔧 Troubleshoot (RepairKit)](https://github.com/danbenba/OmniTools.Troubleshoot) – Outil de réparation Windows  
 - [⚙️ Windows Tweaks (Winutil)](https://github.com/danbenba/OmniTools.WindowsTweaks) – Outil de personnalisation et d’optimisation de Windows  

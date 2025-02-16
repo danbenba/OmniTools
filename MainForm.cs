@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Reflection;
 using System.Security.Principal;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
@@ -20,6 +21,7 @@ namespace OmniTools
         private GroupBox groupBoxActions;
         private ComboBox comboBoxScripts;
         private Button btnExecute;
+        private Button btnOption;  // Bouton Option ajouté
         private CheckBox checkBoxRestart;
         private CheckBox checkBoxDisableDefender;
         private Label labelVersion;
@@ -29,15 +31,19 @@ namespace OmniTools
         internal RichTextBox richTextBoxLogs;  // accessible dans Logger
 
         // Constantes et variables pour la barre de progression
-        private const int ProgressBarWidth = 27; 
+        private const int ProgressBarWidth = 27;
         private int lastProgress = 0;
 
         string systemVersion = Environment.OSVersion.VersionString;
         string dotNetVersion = System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription;
         string currentVersion = Program.Version;
 
-        // Chemin vers le dossier temporaire
-        private readonly string tempPath = Path.GetTempPath();
+        // *** Utilisation d'un sous-dossier dédié dans le dossier temporaire ***
+        public readonly string tempPath = Path.Combine(Path.GetTempPath(), "OmniTools");
+
+        // *** Nouveaux champs pour la gestion de l'annulation ***
+        private CancellationTokenSource cancellationTokenSource;
+        private bool isOperationInProgress = false;
 
         public MainForm()
         {
@@ -45,6 +51,12 @@ namespace OmniTools
 
             // Lier l'instance de MainForm au Logger
             Logger.MainFormInstance = this;
+
+            // Création du dossier temporaire dédié s'il n'existe pas
+            if (!Directory.Exists(tempPath))
+            {
+                Directory.CreateDirectory(tempPath);
+            }
 
             // Charger l'icône depuis les ressources
             LoadIconFromResources();
@@ -65,6 +77,7 @@ namespace OmniTools
             this.groupBoxActions = new GroupBox();
             this.comboBoxScripts = new ComboBox();
             this.btnExecute = new Button();
+            this.btnOption = new Button(); // Initialisation du bouton Option
             this.btnExit = new Button();
             this.checkBoxDisableDefender = new CheckBox();
             this.checkBoxRestart = new CheckBox();
@@ -101,19 +114,32 @@ namespace OmniTools
             this.btnExecute.Location = new Point(310, 27);
             this.btnExecute.Size = new Size(110, 35);
             this.btnExecute.Click += BtnExecute_Click;
-            this.btnExecute.Enabled = false;
 
             // btnExit
-            this.btnExit.Font = new Font("Segoe UI", 12F, FontStyle.Regular);
+            this.btnExit.Font = new Font("Segoe UI", 10F, FontStyle.Regular);
             this.btnExit.Text = "Exit";
             this.btnExit.Location = new Point(424, 27);
             this.btnExit.Size = new Size(80, 35);
             this.btnExit.Click += BtnExit_Click;
 
+            // btnSystemInfo
+            this.btnSystemInfo.Font = new Font("Segoe UI", 10F);
+            this.btnSystemInfo.Text = "System Info";
+            this.btnSystemInfo.Location = new Point(310, 65);
+            this.btnSystemInfo.Size = new Size(110, 35);
+            this.btnSystemInfo.Click += BtnSystemInfo_Click;
+
+            // btnOption (Nouveau bouton Option)
+            this.btnOption.Font = new Font("Segoe UI", 10F);
+            this.btnOption.Text = "Plus";
+            this.btnOption.Location = new Point(424, 65);
+            this.btnOption.Size = new Size(80, 35);
+            this.btnOption.Click += BtnOption_Click;
+
             // checkBoxRestart
             this.checkBoxRestart.AutoSize = true;
             this.checkBoxRestart.Font = new Font("Segoe UI", 10F);
-            this.checkBoxRestart.Text = "Restart PC after execution";
+            this.checkBoxRestart.Text = "Restart PC after execution - INSTABLE";
             this.checkBoxRestart.Location = new Point(15, 70);
             this.checkBoxRestart.Size = new Size(200, 23);
 
@@ -123,13 +149,6 @@ namespace OmniTools
             this.checkBoxDisableDefender.Text = "Disable Windows Defender before execution";
             this.checkBoxDisableDefender.Location = new Point(15, 100);
             this.checkBoxDisableDefender.Size = new Size(300, 23);
-
-            // btnSystemInfo
-            this.btnSystemInfo.Font = new Font("Segoe UI", 10F);
-            this.btnSystemInfo.Text = "System Info";
-            this.btnSystemInfo.Location = new Point(310, 65);
-            this.btnSystemInfo.Size = new Size(110, 35);
-            this.btnSystemInfo.Click += BtnSystemInfo_Click;
 
             // labelVersion
             this.labelVersion.Font = new Font("Segoe UI", 9F);
@@ -156,6 +175,7 @@ namespace OmniTools
             this.groupBoxActions.Controls.Add(this.btnExit);
             this.groupBoxActions.Controls.Add(this.checkBoxRestart);
             this.groupBoxActions.Controls.Add(this.btnSystemInfo);
+            this.groupBoxActions.Controls.Add(this.btnOption); // Ajout du bouton Option
             this.groupBoxActions.Controls.Add(this.checkBoxDisableDefender);
 
             // Ajout des contrôles à la Form
@@ -173,24 +193,18 @@ namespace OmniTools
         }
 
         /// <summary>
-        /// Tente de charger une icône depuis le dossier temporaire (icon.ico).
+        /// Tente de charger une icône depuis les ressources.
         /// </summary>
         public void LoadIconFromResources()
         {
             try
             {
-                // Obtenez l'assembly courant
                 Assembly assembly = Assembly.GetExecutingAssembly();
-
-                // Spécifiez le nom complet de la ressource
                 string resourceName = "OmniTools.Resources.images.icon.png";
-
-                // Obtenez le flux de la ressource
                 using (Stream stream = assembly.GetManifestResourceStream(resourceName))
                 {
                     if (stream != null)
                     {
-                        // Chargez l'image depuis le flux
                         using (Bitmap bitmap = new Bitmap(stream))
                         {
                             this.Icon = Icon.FromHandle(bitmap.GetHicon());
@@ -198,7 +212,6 @@ namespace OmniTools
                     }
                     else
                     {
-                        // Gérer le cas où la ressource n'est pas trouvée
                         MessageBox.Show($"La ressource {resourceName} n'a pas été trouvée.", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
@@ -209,25 +222,17 @@ namespace OmniTools
             }
         }
 
-        /// <summary>
-        /// Événement déclenché lors du chargement de la fenêtre principale.
-        /// Prépare le ComboBox des scripts, vérifie si l'exécution est en mode admin, etc.
-        /// </summary>
         private void MainForm_Load(object sender, EventArgs e)
         {
             string dotNetVersion = System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription;
-
-            // Charger la liste des scripts dans la comboBox
             comboBoxScripts.DataSource = ScriptConfig.Scripts;
             comboBoxScripts.DisplayMember = "DisplayName";
             comboBoxScripts.SelectedIndex = -1;
-            btnExecute.Enabled = false;
+            btnExecute.Enabled = false; // Le bouton est desactiver dès le départ
 
-            // Configurer le ComboBox pour dessiner les éléments personnalisés
             comboBoxScripts.DrawMode = DrawMode.OwnerDrawFixed;
             comboBoxScripts.DrawItem += ComboBoxScripts_DrawItem;
 
-            // Vérifier si l'application tourne en mode administrateur
             bool isAdmin = new WindowsPrincipal(WindowsIdentity.GetCurrent())
                 .IsInRole(WindowsBuiltInRole.Administrator);
 
@@ -236,27 +241,20 @@ namespace OmniTools
                 : "                                                                             Non exécuté en tant qu'administrateur";
             Color statusColor = isAdmin ? Color.Green : Color.Red;
 
-            // Afficher la version .NET
             labelVersion.Text = $"{dotNetVersion}";
             labelVersion.ForeColor = Color.Black;
             labelVersion.AutoSize = true;
 
-            // Création d'un label pour afficher le statut administrateur
             Label adminLabel = new Label();
             adminLabel.Text = adminStatus;
             adminLabel.ForeColor = statusColor;
             adminLabel.AutoSize = true;
-
-            // Positionnement de adminLabel
             int spacing = 10;
             adminLabel.Location = new Point(labelVersion.Location.X + labelVersion.Width + spacing, labelVersion.Location.Y);
-
-            // Vérifier que le label rentre dans la fenêtre
-            int maxRight = this.ClientSize.Width - 20; 
+            int maxRight = this.ClientSize.Width - 20;
             int totalWidth = adminLabel.Location.X + adminLabel.Width;
             if (totalWidth > maxRight)
             {
-                // Si ça dépasse, on réduit la police
                 using (Graphics g = this.CreateGraphics())
                 {
                     while (g.MeasureString(adminLabel.Text, adminLabel.Font).Width > (maxRight - adminLabel.Location.X) 
@@ -268,7 +266,6 @@ namespace OmniTools
             }
             this.Controls.Add(adminLabel);
 
-            // S'il n’est pas admin, ajouter un message d'avertissement
             ToolTip toolTip = new ToolTip();
             if (!isAdmin)
             {
@@ -278,15 +275,11 @@ namespace OmniTools
                 adminLabel.Click += LblPrivilege_Click;
             }
 
-            // Titre principal
             labelTitle.Text = $"OmniTools v{currentVersion}";
 
             CheckInternetAndNotifyAsync();
         }
 
-        /// <summary>
-        /// Dessine les éléments du ComboBox en grisant ceux qui sont désactivés.
-        /// </summary>
         private void ComboBoxScripts_DrawItem(object sender, DrawItemEventArgs e)
         {
             e.DrawBackground();
@@ -300,10 +293,6 @@ namespace OmniTools
             e.DrawFocusRectangle();
         }
 
-        /// <summary>
-        /// Gestion du clic sur le label des privilèges : si l'utilisateur n'est pas administrateur,
-        /// il est invité à relancer l'application en mode administrateur.
-        /// </summary>
         public void LblPrivilege_Click(object sender, EventArgs e)
         {
             DialogResult result = MessageBox.Show(
@@ -321,7 +310,7 @@ namespace OmniTools
                         UseShellExecute = true,
                         WorkingDirectory = Environment.CurrentDirectory,
                         FileName = Application.ExecutablePath,
-                        Verb = "runas" // Demande d'élévation
+                        Verb = "runas"
                     };
                     Process.Start(procInfo);
                     Application.Exit();
@@ -333,9 +322,6 @@ namespace OmniTools
             }
         }
 
-        /// <summary>
-        /// Vérifie la connexion Internet et affiche un message dans les logs si aucune connexion n'est détectée.
-        /// </summary>
         public static async Task CheckInternetAndNotifyAsync()
         {
             bool isConnected = await Program.IsInternetConnectionAvailable();
@@ -346,15 +332,10 @@ namespace OmniTools
             }
             else
             {
-                // Message de log
                 Logger.LogSuccess("Application démarrée et prête.");
             }
         }
 
-        /// <summary>
-        /// Événement appelé lorsqu’on change la sélection du ComboBox des scripts.
-        /// Active ou désactive le bouton d'exécution en conséquence.
-        /// </summary>
         private void ComboBoxScripts_SelectedIndexChanged(object sender, EventArgs e)
         {
             var selectedScript = comboBoxScripts.SelectedItem as ScriptConfig.ScriptItem;
@@ -362,11 +343,21 @@ namespace OmniTools
         }
 
         /// <summary>
-        /// Événement appelé quand on clique sur "Execute".
-        /// Télécharge le script, désactive (si coché) Defender, exécute le script, puis réactive Defender et éventuellement redémarre.
+        /// Gestion du clic sur le bouton Execute / Cancel.
+        /// Lorsque l'opération n'est pas en cours, démarre le téléchargement et exécution du script.
+        /// Si l'opération est en cours (bouton affichant "Cancel"), l'annule.
         /// </summary>
         private async void BtnExecute_Click(object sender, EventArgs e)
-        {
+        { 
+            // Si une opération est en cours, le bouton agit en mode "Cancel"
+            if (isOperationInProgress)
+            {
+                cancellationTokenSource?.Cancel();
+                Logger.DownloadCanceledLog(" Téléchargement annulé");
+                Logger.LogWarning("Téléchargement annulé par l'utilisateur");
+                return;
+            }
+
             var selectedScript = comboBoxScripts.SelectedItem as ScriptConfig.ScriptItem;
             if (selectedScript == null || !selectedScript.IsEnabled)
             {
@@ -380,9 +371,8 @@ namespace OmniTools
                 await ExecuteRegistryCommands("disable");
             }
 
-            // Demander confirmation à l'utilisateur
             DialogResult dr = MessageBox.Show(
-                $"Voulez-vous vraiment exécuter '{selectedScript.DisplayName}'?",
+                $"Voulez-vous vraiment exécuter '{selectedScript.DisplayName}' ?",
                 "Confirmation",
                 MessageBoxButtons.YesNo,
                 MessageBoxIcon.Question
@@ -394,37 +384,42 @@ namespace OmniTools
                 return;
             }
 
-            btnExecute.Enabled = false; // Empêcher les doublons
+            // Mise à jour de l'interface : désactivation de la liste et passage du bouton en mode Cancel
+            comboBoxScripts.Enabled = false;
+            btnExecute.Text = "Cancel";
+            isOperationInProgress = true;
+            cancellationTokenSource = new CancellationTokenSource();
 
             string scriptLocalPath = Path.Combine(tempPath, selectedScript.LocalFileName);
 
-            // 1) Télécharger le script avec une barre de progression
-            bool downloadSuccess = await DownloadFileWithProgressAsync(selectedScript.DownloadUrl, scriptLocalPath);
+            // Téléchargement du script avec prise en charge de l'annulation
+            bool downloadSuccess = await DownloadFileWithProgressAsync(selectedScript.DownloadUrl, scriptLocalPath, cancellationTokenSource.Token);
             if (!downloadSuccess)
             {
-                Logger.LogError($"Échec du téléchargement de '{selectedScript.DisplayName}'.");
-                btnExecute.Enabled = true;
+                // Si le téléchargement a été annulé, ne pas afficher de message d'erreur
+                if (!cancellationTokenSource.Token.IsCancellationRequested)
+                {
+                    Logger.LogError($"Échec du téléchargement de '{selectedScript.DisplayName}'.");
+                }
+                isOperationInProgress = false;
+                comboBoxScripts.Enabled = true;
+                btnExecute.Text = "Execute";
                 return;
             }
 
-            // 2) Exécuter le script
+            // Exécution du script téléchargé
             bool scriptExecuted = await ExecuteScriptAsync(scriptLocalPath, selectedScript.DefaultArguments, selectedScript.DisplayName);
             if (!scriptExecuted)
             {
                 Logger.LogError($"Échec de l'exécution de '{selectedScript.DisplayName}'.");
             }
-            else
-            {
-            }
 
-            // Si on avait coché la case "Disable Windows Defender before execution", on réactive
             if (checkBoxDisableDefender.Checked)
             {
                 Logger.LogInfo("Réactivation de Windows Defender après l'exécution...");
                 await ExecuteRegistryCommands("enable");
             }
 
-            // Si on a coché "Restart PC after execution"
             if (checkBoxRestart.Checked)
             {
                 Logger.LogInfo("Redémarrage du système initié...");
@@ -437,20 +432,17 @@ namespace OmniTools
                 });
             }
 
-            btnExecute.Enabled = true;
+            // Réinitialisation de l'interface
+            isOperationInProgress = false;
+            comboBoxScripts.Enabled = true;
+            btnExecute.Text = "Execute";
         }
 
-        /// <summary>
-        /// Ferme l'application.
-        /// </summary>
         private void BtnExit_Click(object sender, EventArgs e)
         {
             Application.Exit();
         }
 
-        /// <summary>
-        /// Active ou désactive Windows Defender via des clés de registre.
-        /// </summary>
         private async Task ExecuteRegistryCommands(string action)
         {
             string[] commands;
@@ -458,17 +450,14 @@ namespace OmniTools
             {
                 commands = new string[]
                 {
-                    "reg add \"HKLM\\Software\\Microsoft\\Windows Defender Security Center\\Notifications\" /v \"DisableNotifications\" /t REG_DWORD /d \"1\" /f",
-                    "reg add \"HKLM\\Software\\Policies\\Microsoft\\Windows Defender\" /v \"DisableAntiSpyware\" /t REG_DWORD /d \"1\" /f",
-                    "reg add \"HKLM\\System\\CurrentControlSet\\Services\\WinDefend\" /v \"Start\" /t REG_DWORD /d \"4\" /f"
+                    @"powershell -Command ""Start-Process powershell -Verb RunAs -ArgumentList '-NoProfile -ExecutionPolicy Bypass -Command \""iex ((New-Object Net.WebClient).DownloadString(''https://raw.githubusercontent.com/jeremybeaume/tools/refs/heads/master/disable-defender.ps1''))\""'"""
                 };
             }
             else // enable
             {
                 commands = new string[]
                 {
-                    "reg delete \"HKLM\\Software\\Policies\\Microsoft\\Windows Defender\" /f",
-                    "reg add \"HKLM\\System\\CurrentControlSet\\Services\\WinDefend\" /v \"Start\" /t REG_DWORD /d \"2\" /f"
+                    @"powershell -Command ""Start-Process powershell -Verb RunAs -ArgumentList '-NoProfile -ExecutionPolicy Bypass -Command \""iex ((New-Object Net.WebClient).DownloadString(''https://raw.githubusercontent.com/bodik/defender/refs/heads/master/tools/windows/toolbox/config-defender-enable.ps1''))\""'"""
                 };
             }
 
@@ -504,37 +493,26 @@ namespace OmniTools
         }
 
         /// <summary>
-        /// Télécharge un fichier en montrant une barre de progression dans le RichTextBox.
+        /// Télécharge un fichier en affichant une barre de progression dans le RichTextBox.
+        /// La méthode prend désormais en charge l'annulation via CancellationToken.
         /// </summary>
-        private async Task<bool> DownloadFileWithProgressAsync(string url, string destinationPath)
+        private async Task<bool> DownloadFileWithProgressAsync(string url, string destinationPath, CancellationToken cancellationToken)
         {
             try
             {
-
-                // Effacer les logs pour eviter les interferences
+                // Effacer les logs pour éviter les interférences
                 Logger.Clear();
 
-                // Defini le nom du script à exécuter
                 var selectedScript = comboBoxScripts.SelectedItem as ScriptConfig.ScriptItem;
-
                 Logger.CoreLog($"Selected: '{selectedScript.DisplayName}'");
 
-                // Supprime toujours l'ancien fichier s'il existe
                 if (File.Exists(destinationPath))
                 {
-                    File.Delete(destinationPath); // Supprime le fichier existant
-                }
-
-                // Si le fichier existe déjà, on n'a pas besoin de le re-télécharger
-                if (File.Exists(destinationPath))
-                {
-                    UpdateProgressBar(100);
-                    AddLog(" Done !\n", Color.Green, newLine: true);
-                    return true;
+                    File.Delete(destinationPath);
                 }
 
                 using HttpClient client = new HttpClient();
-                using HttpResponseMessage response = await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead);
+                using HttpResponseMessage response = await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
                 response.EnsureSuccessStatusCode();
 
                 long? totalBytes = response.Content.Headers.ContentLength;
@@ -544,34 +522,34 @@ namespace OmniTools
                     return false;
                 }
 
-                using Stream contentStream = await response.Content.ReadAsStreamAsync();
+                using Stream contentStream = await response.Content.ReadAsStreamAsync(cancellationToken);
                 using FileStream fileStream = new FileStream(destinationPath, FileMode.Create, FileAccess.Write, FileShare.None);
 
                 byte[] buffer = new byte[8192];
                 long totalRead = 0;
                 int bytesRead;
-
-                // Préparation de la barre de progression
-                string progressBarTemplate = "Downloading : [---------------------------] 0% ";
+                string progressBarTemplate = "Downloading : [---------------------------] 0% ";
                 AddLog(progressBarTemplate, Color.Blue, newLine: false);
 
-                while ((bytesRead = await contentStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
+                while ((bytesRead = await contentStream.ReadAsync(buffer, 0, buffer.Length, cancellationToken)) > 0)
                 {
-                    await fileStream.WriteAsync(buffer, 0, bytesRead);
+                    await fileStream.WriteAsync(buffer, 0, bytesRead, cancellationToken); // Ajout de l'écriture dans le fichier
                     totalRead += bytesRead;
-
                     int progress = (int)(totalRead * 100 / totalBytes.Value);
-                    if (progress >= lastProgress + 2) // Mettre à jour toutes les 2%
+                    if (progress >= lastProgress + 2) // Mise à jour toutes les 2%
                     {
                         UpdateProgressBar(progress);
                         lastProgress = progress;
                     }
                 }
 
-                // Mise à jour finale à 100%
                 UpdateProgressBar(100);
                 AddLog(" Done !\n", Color.Green, newLine: true);
                 return true;
+            }
+            catch (OperationCanceledException)
+            {
+                return false;
             }
             catch (Exception ex)
             {
@@ -587,7 +565,7 @@ namespace OmniTools
         {
             int filledBars = (progress * ProgressBarWidth) / 100;
             string progressBar = new string('#', filledBars) + new string('-', ProgressBarWidth - filledBars);
-            string progressLine = $"Downloading : [{progressBar}] {progress}% ";
+            string progressLine = $"Downloading : [{progressBar}] {progress}% ";
 
             if (richTextBoxLogs.Lines.Length > 0)
             {
@@ -597,61 +575,6 @@ namespace OmniTools
             }
         }
 
-        /// <summary>
-        /// Désactive Windows Defender via un script (si configuré).
-        /// </summary>
-        private async Task<bool> DisableDefenderAsync()
-        {
-            var disableScript = ScriptConfig.GetScriptByDisplayName("Disable All Security Mitigations");
-            if (disableScript == null)
-            {
-                Logger.LogError("Script de désactivation non trouvé dans la configuration.");
-                return false;
-            }
-
-            string scriptLocalPath = Path.Combine(tempPath, disableScript.LocalFileName);
-            if (!File.Exists(scriptLocalPath))
-            {
-                Logger.LogError($"Le script '{disableScript.LocalFileName}' n'a pas été trouvé dans le répertoire temporaire.");
-                return false;
-            }
-
-            Logger.LogInfo("Désactivation temporaire de Windows Defender...");
-            bool success = await ExecuteScriptAsync(scriptLocalPath, disableScript.DefaultArguments, disableScript.DisplayName);
-            if (success)
-                Logger.LogSuccess("Windows Defender a été désactivé.");
-            return success;
-        }
-
-        /// <summary>
-        /// Réactive Windows Defender via un script (si configuré).
-        /// </summary>
-        private async Task<bool> EnableDefenderAsync()
-        {
-            var enableScript = ScriptConfig.GetScriptByDisplayName("Enable W-Defender");
-            if (enableScript == null)
-            {
-                Logger.LogError("Script d'activation non trouvé dans la configuration.");
-                return false;
-            }
-
-            string scriptLocalPath = Path.Combine(tempPath, enableScript.LocalFileName);
-            if (!File.Exists(scriptLocalPath))
-            {
-                Logger.LogError($"Le script '{enableScript.LocalFileName}' n'a pas été trouvé dans le répertoire temporaire.");
-                return false;
-            }
-
-            Logger.LogInfo("Réactivation de Windows Defender...");
-            bool success = await ExecuteScriptAsync(scriptLocalPath, enableScript.DefaultArguments, enableScript.DisplayName);
-            if (success)
-                Logger.LogSuccess("Windows Defender a été réactivé.");
-            return success;
-        }
-
-        /// <summary>
-        /// Exécute le fichier ou script spécifié avec des arguments.
-        /// </summary>
         private async Task<bool> ExecuteScriptAsync(string scriptPath, string arguments, string displayName)
         {
             try
@@ -661,26 +584,19 @@ namespace OmniTools
 
                 if (Path.GetExtension(scriptPath).Equals(".exe", StringComparison.OrdinalIgnoreCase))
                 {
-                    // Utilisation de "start" pour ouvrir le .bat dans une nouvelle fenêtre
                     process.StartInfo.FileName = "cmd.exe";
                     process.StartInfo.Arguments = $"/c start \"\" \"{scriptPath}\" {arguments}";
                 }
                 else
                 {
-                    // Pour les .exe ou autres types, on lance directement le fichier
                     process.StartInfo.FileName = scriptPath;
                     process.StartInfo.Arguments = arguments;
                 }
 
-                // IMPORTANT : Pour lancer le processus comme un double-clic, on active UseShellExecute
                 process.StartInfo.UseShellExecute = true;
-                // On laisse CreateNoWindow à false pour que la nouvelle fenêtre s'ouvre
                 process.StartInfo.CreateNoWindow = false;
 
-                // Démarrer le processus
                 process.Start();
-
-                // Optionnel : attendre la fin du processus de façon asynchrone (selon votre besoin)
                 await Task.Run(() => process.WaitForExit());
 
                 if (process.ExitCode == 0)
@@ -701,36 +617,23 @@ namespace OmniTools
             }
         }
 
-
-        /// <summary>
-        /// Affiche la fenêtre d'information système personnalisée.
-        /// </summary>
         private void BtnSystemInfo_Click(object sender, EventArgs e)
         {
             SystemInfoForm infoForm = new SystemInfoForm();
             infoForm.ShowDialog();
         }
 
-        /// <summary>
-        /// Affiche la fenêtre "À propos" (AboutForm).
-        /// </summary>
         private void BtnAbout_Click(object sender, EventArgs e)
         {
-            AboutFrom aboutForm = new AboutFrom();
-            aboutForm.ShowDialog(); // Modal
+            AboutForm aboutForm = new AboutForm();
+            aboutForm.ShowDialog();
         }
 
-        /// <summary>
-        /// Ferme l'application si l’utilisateur ferme le MainForm.
-        /// </summary>
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             Application.Exit();
         }
 
-        /// <summary>
-        /// Ajoute un message coloré dans la zone de logs (RichTextBox).
-        /// </summary>
         public void AddLog(string message, Color color, bool newLine = true)
         {
             if (this.richTextBoxLogs.InvokeRequired)
@@ -750,15 +653,21 @@ namespace OmniTools
                 }
                 int end = richTextBoxLogs.TextLength;
 
-                // Sélection de la zone pour lui appliquer la couleur
                 richTextBoxLogs.Select(start, end - start);
                 richTextBoxLogs.SelectionColor = color;
 
-                // Désélection et défilement automatique
                 richTextBoxLogs.SelectionLength = 0;
                 richTextBoxLogs.SelectionStart = richTextBoxLogs.Text.Length;
                 richTextBoxLogs.ScrollToCaret();
             }
         }
+
+        // Gestion du clic sur le bouton Option
+        private void BtnOption_Click(object sender, EventArgs e)
+        {
+            OptionsForm optionsForm = new OptionsForm();
+            optionsForm.ShowDialog();
+        }
     }
+
 }

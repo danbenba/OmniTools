@@ -6,7 +6,7 @@ if not "%1"=="" goto processArgs
 :: if not "%2"=="" goto processArgs
 
 :menu
-goto SetDefaultAppDir
+:: goto SetDefaultAppDir
 cls
 echo =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 echo          OmniTools Core Menu
@@ -36,7 +36,7 @@ if /I "%1"=="/build" goto buildApp
 if /I "%1"=="/add" goto addPackageArg
 :: if /I "%2"=="/appdefaultdir" goto SetDefaultAppDir
 
-echo Argument invalide.
+echo [7;31mArgument invalide.[0m
 echo Utilisation depuis la ligne de commande :
 echo   /run             -> Run
 echo   /build           -> Build
@@ -46,15 +46,19 @@ goto end
 
 :runApp
 echo.
-echo Launching...
+echo [100mLaunching...[0m
 dotnet run
+echo.
+echo [42mProcess Executed[0m
 pause
 goto end
 
 :buildApp
 echo.
-echo Building...
+echo [100mBuilding...[0m
 dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:EnableCompressionInSingleFile=true -o ./publish
+echo.
+echo [42mProcess Executed[0m
 pause
 goto end
 
@@ -67,25 +71,29 @@ if "%packageName%"=="" (
     goto menu
 )
 echo.
-echo Ajout du package %packageName%...
+echo [100mAjout du package %packageName%...[0m
 dotnet add package %packageName%
+echo.
+echo [42mProcess Executed[0m
 pause
 goto menu
 
 :addPackageArg
 REM Pour l'argument /add, le nom du package doit être passé en second paramètre
 if "%2"=="" (
-    echo Veuillez fournir le nom du package en argument.
+    echo [7;31mVeuillez fournir le nom du package en argument.[0m
     pause
     goto end
 )
 echo.
-echo Ajout du package %2...
+echo [100mAjout du package %2...[0m
 dotnet add package %2
+echo.
+echo [42mProcess Executed[0m
 pause
 goto end
 
 :end
 echo.
-echo Au revoir...
+echo Exiting...
 exit

@@ -1,13 +1,14 @@
 using System;
 using System.Drawing;
-using System.Windows.Forms;
-using System.Reflection;
-using System.Diagnostics;
 using System.IO;
+using System.Reflection;
+using System.Windows.Forms;
+using System.Media;
+using System.Diagnostics;
 
 namespace OmniTools
 {
-    public class AboutFrom : Form
+    public class AboutForm : Form
     {
         private PictureBox pictureBoxLogo;
         private Label lblTitle;
@@ -15,6 +16,7 @@ namespace OmniTools
         private Label lblPrecaution;
         private Button btnOk;
         private Button btnLearnMore;
+        private Button BtnCheckForUpdates;
         private TableLayoutPanel mainLayout;
         private TableLayoutPanel buttonLayout;
 
@@ -22,7 +24,7 @@ namespace OmniTools
         string CurrentVersion = Program.Version;
         string Language = Program.Language;
 
-        public AboutFrom()
+        public AboutForm()
         {
             InitializeComponent();
             LoadLogoImage();
@@ -30,7 +32,7 @@ namespace OmniTools
 
         private void InitializeComponent()
         {
-            // Paramètres de base de la fenêtre "AboutFrom"
+            // Paramètres de base de la fenêtre "AboutForm"
             this.Text = "À propos de OmniTools";
             this.Size = new Size(600, 350);
             this.StartPosition = FormStartPosition.CenterParent;
@@ -96,27 +98,37 @@ namespace OmniTools
             // TableLayoutPanel pour les boutons
             buttonLayout = new TableLayoutPanel();
             buttonLayout.Dock = DockStyle.Fill;
-            buttonLayout.ColumnCount = 2;
+            buttonLayout.ColumnCount = 3;
             buttonLayout.RowCount = 1;
-            buttonLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
-            buttonLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            buttonLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.33F));
+            buttonLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.33F));
+            buttonLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.33F));
             textAndButtonsPanel.Controls.Add(buttonLayout, 0, 1);
 
-            // Bouton "Learn More"
+            // Bouton "Check For Updates" placé dans la première colonne
+            BtnCheckForUpdates = new Button();
+            BtnCheckForUpdates.Text = "Check for updates";
+            BtnCheckForUpdates.Size = new Size(120, 30);
+            BtnCheckForUpdates.Anchor = AnchorStyles.None;
+            // Rendre l’événement asynchrone et passer true pour indiquer que l'appel provient de la fenêtre AboutForm
+            BtnCheckForUpdates.Click += async (sender, e) => await Program.CheckForUpdates(true);
+            buttonLayout.Controls.Add(BtnCheckForUpdates, 0, 0);
+
+            // Bouton "Learn More" placé dans la deuxième colonne
             btnLearnMore = new Button();
             btnLearnMore.Text = "Learn More";
             btnLearnMore.Size = new Size(100, 30);
-            btnLearnMore.Anchor = AnchorStyles.Right;
+            btnLearnMore.Anchor = AnchorStyles.None;
             btnLearnMore.Click += BtnLearnMore_Click;
-            buttonLayout.Controls.Add(btnLearnMore, 0, 0);
+            buttonLayout.Controls.Add(btnLearnMore, 1, 0);
 
-            // Bouton "OK"
+            // Bouton "OK" placé dans la troisième colonne
             btnOk = new Button();
             btnOk.Text = "OK";
             btnOk.Size = new Size(100, 30);
-            btnOk.Anchor = AnchorStyles.Left;
+            btnOk.Anchor = AnchorStyles.None;
             btnOk.Click += BtnOk_Click;
-            buttonLayout.Controls.Add(btnOk, 1, 0);
+            buttonLayout.Controls.Add(btnOk, 2, 0);
 
             // Label d’avertissement "précaution" (lblPrecaution)
             lblPrecaution = new Label();
@@ -152,7 +164,7 @@ namespace OmniTools
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Impossible de charger le logo JetBrains : {ex.Message}", "Erreur",
+                MessageBox.Show($"Impossible de charger le logo : {ex.Message}", "Erreur",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -185,6 +197,74 @@ namespace OmniTools
             {
                 MessageBox.Show($"Impossible d'ouvrir le lien GitHub : {ex.Message}", "Erreur",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        /// <summary>
+        /// Affiche une notification Windows (infobulle) avec un son et l'icône de AboutForm.
+        /// </summary>
+        public static void ShowNotification(string message)
+        {
+            // Chargement de l'icône depuis les ressources
+            Icon aboutIcon = LoadAboutIcon();
+
+            NotifyIcon notifyIcon = new NotifyIcon
+            {
+                Icon = aboutIcon, // Utilisation de l'icône personnalisée
+                BalloonTipTitle = "Mise à jour",
+                BalloonTipText = message,
+                Visible = true
+            };
+
+            // Joue un son système (vous pouvez choisir SystemSounds.Beep, Asterisk, etc.)
+            System.Media.SystemSounds.Question.Play();
+
+            // Affiche l'infobulle pendant 3 secondes
+            notifyIcon.ShowBalloonTip(3000);
+
+            // Utilisation d'un Timer pour nettoyer le NotifyIcon après affichage
+            System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer
+            {
+                Interval = 4000 // Intervalle en millisecondes
+            };
+
+            timer.Tick += (sender, e) =>
+            {
+                notifyIcon.Dispose();
+                timer.Stop();
+            };
+
+            timer.Start();
+        }
+
+        /// <summary>
+        /// Charge l'icône d'AboutForm depuis les ressources intégrées.
+        /// Convertit l'image PNG en Icon.
+        /// </summary>
+        private static Icon LoadAboutIcon()
+        {
+            try
+            {
+                Assembly assembly = Assembly.GetExecutingAssembly();
+                string resourceName = "OmniTools.Resources.images.icon.png";
+                using (Stream stream = assembly.GetManifestResourceStream(resourceName))
+                {
+                    if (stream != null)
+                    {
+                        Bitmap bmp = new Bitmap(stream);
+                        // Crée un handle d'icône à partir du Bitmap.
+                        return Icon.FromHandle(bmp.GetHicon());
+                    }
+                    else
+                    {
+                        // En cas d'absence de ressource, utiliser l'icône système par défaut.
+                        return SystemIcons.Application;
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                return SystemIcons.Application;
             }
         }
     }

@@ -211,7 +211,6 @@ D:\Software\Development\C#\OmniTools\MainGUI\bin\Release\net9.0-windows\win-x64\
 D:\Software\Development\C#\OmniTools\MainGUI\bin\Release\net9.0-windows\win-x64\hostfxr.dll
 D:\Software\Development\C#\OmniTools\MainGUI\bin\Release\net9.0-windows\win-x64\hostpolicy.dll
 D:\Software\Development\C#\OmniTools\MainGUI\bin\Release\net9.0-windows\win-x64\mscordaccore.dll
-D:\Software\Development\C#\OmniTools\MainGUI\bin\Release\net9.0-windows\win-x64\mscordaccore_amd64_amd64_9.0.124.61010.dll
 D:\Software\Development\C#\OmniTools\MainGUI\bin\Release\net9.0-windows\win-x64\mscordbi.dll
 D:\Software\Development\C#\OmniTools\MainGUI\bin\Release\net9.0-windows\win-x64\mscorrc.dll
 D:\Software\Development\C#\OmniTools\MainGUI\bin\Release\net9.0-windows\win-x64\msquic.dll
@@ -278,3 +277,4 @@ D:\Software\Development\C#\OmniTools\MainGUI\obj\Release\net9.0-windows\win-x64\
 D:\Software\Development\C#\OmniTools\MainGUI\obj\Release\net9.0-windows\win-x64\OmniTools.pdb
 D:\Software\Development\C#\OmniTools\MainGUI\obj\Release\net9.0-windows\win-x64\OmniTools.genruntimeconfig.cache
 D:\Software\Development\C#\OmniTools\MainGUI\obj\Release\net9.0-windows\win-x64\ref\OmniTools.dll
+D:\Software\Development\C#\OmniTools\MainGUI\bin\Release\net9.0-windows\win-x64\mscordaccore_amd64_amd64_9.0.225.6610.dll
