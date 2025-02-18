@@ -121,6 +121,12 @@ namespace OmniTools
                 },
                 new ScriptItem
                 {
+                    DisplayName = "Windows KeyGen (Win98 - WinXP)",
+                    DownloadUrl = "https://github.com/Endermanch/XPKeygen/releases/download/v2.7/XPKeygen.exe",
+                    LocalFileName = "XPKeygen.OmniTools.exe"
+                },
+                new ScriptItem
+                {
                     DisplayName = "--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-- ",
                     DownloadUrl = "https://raw.githubusercontent.com/danbenba/OmniTools/refs/heads/project/webFiles/Playloads/other.cmd",
                     LocalFileName = "Disabled.OmniTools.bat",
