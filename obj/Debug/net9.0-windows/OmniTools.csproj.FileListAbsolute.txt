@@ -34,3 +34,4 @@ D:\Software\Development\C#\OmniTools\MainGUI\bin\Debug\net9.0-windows\runtimes\w
 D:\Software\Development\C#\OmniTools\MainGUI\obj\Debug\net9.0-windows\OmniTools.csproj.Up2Date
 D:\Software\Development\C#\OmniTools\MainGUI\obj\Debug\net9.0-windows\OmniTools.genruntimeconfig.cache
 D:\Software\Development\C#\OmniTools\MainGUI\obj\Debug\net9.0-windows\ref\OmniTools.dll
+D:\Software\Development\C#\OmniTools\MainGUI\obj\Debug\net9.0-windows\OmniTools.sourcelink.json
