@@ -88,7 +88,7 @@ namespace OmniTools
 
             // Label de Description (lblDescription)
             lblDescription = new Label();
-            lblDescription.Text = $"Développé par danbenba.\n\nOmniTools est un utilitaire Windows qui facilite l’exécution\nde scripts variés.\nVersion {CurrentVersion} ({Language} Version) - Copyright © 2025 danbenba";
+            lblDescription.Text = $"Développé par danbenba.\nOmniTools est un utilitaire d'exécutionde scripts variés.\n\n                        Version {CurrentVersion} ({Language} Version)\n                  Copyright © 2021-2025 danbenba";
             lblDescription.Font = new Font("Arial", 10);
             lblDescription.AutoSize = true;
             lblDescription.TextAlign = ContentAlignment.MiddleLeft;
