@@ -202,6 +202,7 @@ En complément, j’ai également conçu des scripts pour adapter certains progr
 
 - [🌐 UniGetUI](https://github.com/marticliment/UniGetUI) – Téléchargeur d’applications pour Windows (Winget, Choco) 
 - [🔌 Rufus](https://github.com/pbatard/rufus) – Outil fiable pour formater les clés USB 
+- [🔑 Windows KeyGen](https://github.com/Endermanch/XPKeygen) – Un generateur de cléé de produit pour windows 98 2003 et XP
 - [🔄 Windows Update Blocker](https://www.sordum.org/9470/windows-update-blocker-v1-8/) – Gestionnaire de mises à jour Windows
 
 
