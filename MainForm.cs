@@ -432,8 +432,23 @@ namespace OmniTools
                 return;
             }
 
+            
+
             if (checkBoxDisableDefender.Checked)
             {
+                DialogResult warnprompt = MessageBox.Show(
+                    $"Attention !\nNous allons procéder à la désactivation de Windows Defender. Une fois Windows Defender désactivé, un message de confirmation apparaîtra pour lancer le programme.",
+                    "Attention",
+                    MessageBoxButtons.OKCancel,
+                    MessageBoxIcon.Warning
+                );
+
+                if (warnprompt == DialogResult.Cancel)
+                {
+                    Logger.LogInfo("Opération annulée par l'utilisateur.");
+                    return;
+                }
+                
                 Logger.LogInfo("Désactivation de Windows Defender avant l'exécution...");
                 await ExecuteRegistryCommands("disable");
             }
@@ -483,6 +498,13 @@ namespace OmniTools
 
             if (checkBoxDisableDefender.Checked)
             {
+                DialogResult warnprompt2 = MessageBox.Show(
+                    $"Attention !\nNous allons procéder à la réactivation de Windows Defender.",
+                    "Attention",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning
+                );
+                
                 Logger.LogInfo("Réactivation de Windows Defender après l'exécution...");
                 await ExecuteRegistryCommands("enable");
             }
@@ -517,14 +539,14 @@ namespace OmniTools
             {
                 commands = new string[]
                 {
-                    @"powershell -Command ""Start-Process powershell -Verb RunAs -ArgumentList '-NoProfile -ExecutionPolicy Bypass -Command \""iex ((New-Object Net.WebClient).DownloadString(''https://raw.githubusercontent.com/jeremybeaume/tools/refs/heads/master/disable-defender.ps1''))\""'"""
+                    @"powershell -Command ""Start-Process powershell -Verb RunAs -ArgumentList '-NoProfile -ExecutionPolicy Bypass -Command \""New-Item -ItemType Directory -Path $env:TEMP\OmniTools\DefenderManager -Force; Invoke-WebRequest -Uri ''https://raw.githubusercontent.com/danbenba/OmniTools/refs/heads/project/Scripts/OmniTools.DefenderDisabler.bat'' -OutFile $env:TEMP\OmniTools\DefenderManager\OmniTools.DefenderDisabler.bat; Start-Process $env:TEMP\OmniTools\DefenderManager\OmniTools.DefenderDisabler.bat\""'"""
                 };
             }
             else // enable
             {
                 commands = new string[]
                 {
-                    @"powershell -Command ""Start-Process powershell -Verb RunAs -ArgumentList '-NoProfile -ExecutionPolicy Bypass -Command \""iex ((New-Object Net.WebClient).DownloadString(''https://raw.githubusercontent.com/bodik/defender/refs/heads/master/tools/windows/toolbox/config-defender-enable.ps1''))\""'"""
+                    @"powershell -Command ""Start-Process powershell -Verb RunAs -ArgumentList '-NoProfile -ExecutionPolicy Bypass -Command \""New-Item -ItemType Directory -Path $env:TEMP\OmniTools\DefenderManager -Force; Invoke-WebRequest -Uri ''https://raw.githubusercontent.com/danbenba/OmniTools/refs/heads/project/Scripts/OmniTools.DefenderEnabler.bat'' -OutFile $env:TEMP\OmniTools\DefenderManager\OmniTools.DefenderEnabler.bat; Start-Process $env:TEMP\OmniTools\DefenderManager\OmniTools.DefenderEnabler.bat\""'"""
                 };
             }
 

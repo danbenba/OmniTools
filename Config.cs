@@ -146,13 +146,15 @@ namespace OmniTools
                 {
                     DisplayName = "Defender Tool",
                     DownloadUrl = "https://github.com/danbenba/DefenderTool/raw/refs/heads/project/publish/DefenderTool.exe",
-                    LocalFileName = "DefenderTool.OmniTools.exe"
+                    LocalFileName = "DefenderTool.OmniTools.exe",
+                    DefenderDisabler = true // Forcer l'activation de l'option Defender
                 },
                 new ScriptItem
                 {
                     DisplayName = "Driver Installer",
                     DownloadUrl = "https://github.com/danbenba/OmniTools.DriverInstaller/releases/download/lasted/DriverInstaller.exe",
-                    LocalFileName = "DriverInstaller.OmniTools.exe"
+                    LocalFileName = "DriverInstaller.OmniTools.exe",
+                    DefenderDisabler = true // Forcer l'activation de l'option Defender
                 },
                 new ScriptItem
                 {

@@ -278,3 +278,4 @@ D:\Software\Development\C#\OmniTools\MainGUI\obj\Release\net9.0-windows\win-x64\
 D:\Software\Development\C#\OmniTools\MainGUI\obj\Release\net9.0-windows\win-x64\OmniTools.genruntimeconfig.cache
 D:\Software\Development\C#\OmniTools\MainGUI\obj\Release\net9.0-windows\win-x64\ref\OmniTools.dll
 D:\Software\Development\C#\OmniTools\MainGUI\bin\Release\net9.0-windows\win-x64\mscordaccore_amd64_amd64_9.0.225.6610.dll
+D:\Software\Development\C#\OmniTools\MainGUI\obj\Release\net9.0-windows\win-x64\OmniTools.sourcelink.json
