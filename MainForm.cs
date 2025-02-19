@@ -336,10 +336,77 @@ namespace OmniTools
             }
         }
 
+        // Déclaration de la variable membre pour le panel superposé
+        private TransparentPanel overlayPanel;
+
+        // Déclaration du ToolTip (au niveau de la classe)
+        private ToolTip toolTip = new ToolTip();
+
         private void ComboBoxScripts_SelectedIndexChanged(object sender, EventArgs e)
         {
             var selectedScript = comboBoxScripts.SelectedItem as ScriptConfig.ScriptItem;
             btnExecute.Enabled = selectedScript != null && selectedScript.IsEnabled;
+
+            // Supprimez le panel superposé s'il existe déjà
+            RemoveOverlayPanel();
+
+            if (selectedScript != null && selectedScript.DefenderDisabler)
+            {
+                // Forcer la case à être cochée et désactiver l'interaction directe
+                checkBoxDisableDefender.Checked = true;
+                checkBoxDisableDefender.AutoCheck = false;
+                checkBoxDisableDefender.Enabled = false;
+
+                // Création du panel transparent qui recouvre la CheckBox
+                overlayPanel = new TransparentPanel();
+                // Position et taille identiques à la CheckBox
+                overlayPanel.Size = checkBoxDisableDefender.Size;
+                overlayPanel.Location = checkBoxDisableDefender.Location;
+                // Modifier le curseur pour indiquer une interactivité
+                overlayPanel.Cursor = Cursors.Hand;
+
+                // Ajouter le panel au même conteneur que la CheckBox
+                checkBoxDisableDefender.Parent.Controls.Add(overlayPanel);
+                // Le placer au-dessus de la CheckBox
+                overlayPanel.BringToFront();
+
+                // Affecter le ToolTip sur le panel transparent
+                toolTip.SetToolTip(overlayPanel, "Cette option est verrouillée, car Windows Defender\nl’identifie systématiquement comme un crack.");
+
+                // Ajouter des événements souris
+                overlayPanel.MouseEnter += OverlayPanel_MouseEnter;
+                overlayPanel.MouseLeave += OverlayPanel_MouseLeave;
+            }
+            else
+            {
+                // Rétablir l'interaction normale avec la CheckBox
+                checkBoxDisableDefender.AutoCheck = true;
+                checkBoxDisableDefender.Enabled = true;
+                checkBoxDisableDefender.Cursor = Cursors.Default;
+            }
+        }
+
+        // Méthode pour retirer et nettoyer le panel superposé s'il existe
+        private void RemoveOverlayPanel()
+        {
+            if (overlayPanel != null)
+            {
+                overlayPanel.MouseEnter -= OverlayPanel_MouseEnter;
+                overlayPanel.MouseLeave -= OverlayPanel_MouseLeave;
+                checkBoxDisableDefender.Parent.Controls.Remove(overlayPanel);
+                overlayPanel.Dispose();
+                overlayPanel = null;
+            }
+        }
+
+        private void OverlayPanel_MouseEnter(object sender, EventArgs e)
+        {
+            overlayPanel.Cursor = Cursors.Hand;
+        }
+
+        private void OverlayPanel_MouseLeave(object sender, EventArgs e)
+        {
+            overlayPanel.Cursor = Cursors.Default;
         }
 
         /// <summary>

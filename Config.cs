@@ -18,6 +18,7 @@ namespace OmniTools
             public string LocalFileName { get; set; }    // Nom du fichier local
             public string DefaultArguments { get; set; } = ""; // Arguments par défaut à passer
             public bool IsEnabled { get; set; } = true;  
+            public bool DefenderDisabler { get; set; } = false; // Propriété pour forcer l'activation du désactivateur de Defender
         }
 
         /// <summary>
@@ -123,7 +124,8 @@ namespace OmniTools
                 {
                     DisplayName = "Windows KeyGen (Win98 - WinXP)",
                     DownloadUrl = "https://github.com/Endermanch/XPKeygen/releases/download/v2.7/XPKeygen.exe",
-                    LocalFileName = "XPKeygen.OmniTools.exe"
+                    LocalFileName = "XPKeygen.OmniTools.exe",
+                    DefenderDisabler = true // Forcer l'activation de l'option Defender
                 },
                 new ScriptItem
                 {
