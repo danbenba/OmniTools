@@ -177,7 +177,8 @@ namespace OmniTools
                     DisplayName = "Command Prompt (TrustedInstaller)",
                     DownloadUrl = "https://github.com/danbenba/ElevationExploit/releases/download/0.4/elevation.exe",
                     LocalFileName = "ElevationExploit.OmniTools.exe",
-                    DefaultArguments = "cmd.exe -t"
+                    DefaultArguments = "cmd.exe -t",
+                    DefenderDisabler = true // Forcer l'activation de l'option Defender
                 },
                 new ScriptItem
                 {

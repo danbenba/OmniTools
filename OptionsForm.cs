@@ -1,7 +1,9 @@
 using System;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace OmniTools
@@ -31,7 +33,7 @@ namespace OmniTools
 
         private void InitializeComponent()
         {
-            // Configuration générale de la fenêtre (fond blanc, textes en noir)
+            // Configuration générale de la fenêtre
             this.StartPosition = FormStartPosition.CenterParent;
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
@@ -49,7 +51,7 @@ namespace OmniTools
             lblHeader.Dock = DockStyle.Top;
             lblHeader.Height = 60;
 
-            // Création du GroupBox pour la gestion des fichiers temporaires
+            // GroupBox pour la gestion des fichiers temporaires
             groupBoxTempFiles = new GroupBox();
             groupBoxTempFiles.Text = "Gestion des fichiers temporaires";
             groupBoxTempFiles.Font = new Font("Segoe UI", 12, FontStyle.Bold);
@@ -59,7 +61,7 @@ namespace OmniTools
             groupBoxTempFiles.Height = 150;
             groupBoxTempFiles.Padding = new Padding(10);
 
-            // Création du TableLayoutPanel pour les boutons et descriptions de fichiers temporaires
+            // TableLayoutPanel pour les fichiers temporaires
             tempTable = new TableLayoutPanel();
             tempTable.ColumnCount = 2;
             tempTable.RowCount = 2;
@@ -75,11 +77,10 @@ namespace OmniTools
             btnClearTemp.Font = new Font("Segoe UI", 10);
             btnClearTemp.Text = "Nettoyer";
             btnClearTemp.Dock = DockStyle.Fill;
-            btnClearTemp.FlatStyle = FlatStyle.Flat;
-            btnClearTemp.BackColor = Color.LightGray;
-            btnClearTemp.ForeColor = Color.Black;
             btnClearTemp.Click += BtnClearTemp_Click;
-            // Label description pour le bouton de nettoyage
+            ApplyRoundedStyle(btnClearTemp, 10);
+
+            // Label description pour "Nettoyer"
             Label lblClearTempDesc = new Label();
             lblClearTempDesc.Text = "Supprime tous les fichiers du dossier temporaire.";
             lblClearTempDesc.Font = new Font("Segoe UI", 9);
@@ -92,11 +93,10 @@ namespace OmniTools
             btnOpenTempFolder.Font = new Font("Segoe UI", 10);
             btnOpenTempFolder.Text = "Ouvrir le dossier";
             btnOpenTempFolder.Dock = DockStyle.Fill;
-            btnOpenTempFolder.FlatStyle = FlatStyle.Flat;
-            btnOpenTempFolder.BackColor = Color.LightGray;
-            btnOpenTempFolder.ForeColor = Color.Black;
             btnOpenTempFolder.Click += BtnOpenTempFolder_Click;
-            // Label description pour l'ouverture du dossier
+            ApplyRoundedStyle(btnOpenTempFolder, 10);
+
+            // Label description pour "Ouvrir le dossier"
             Label lblOpenTempDesc = new Label();
             lblOpenTempDesc.Text = "Ouvre le dossier contenant les fichiers temporaires.";
             lblOpenTempDesc.Font = new Font("Segoe UI", 9);
@@ -111,7 +111,7 @@ namespace OmniTools
             tempTable.Controls.Add(lblOpenTempDesc, 1, 1);
             groupBoxTempFiles.Controls.Add(tempTable);
 
-            // Création du GroupBox pour les options de l'application
+            // GroupBox pour les options de l'application
             groupBoxAppOptions = new GroupBox();
             groupBoxAppOptions.Text = "Options de l'application";
             groupBoxAppOptions.Font = new Font("Segoe UI", 12, FontStyle.Bold);
@@ -120,7 +120,7 @@ namespace OmniTools
             groupBoxAppOptions.Dock = DockStyle.Fill;
             groupBoxAppOptions.Padding = new Padding(10);
 
-            // Création du TableLayoutPanel pour les boutons et descriptions des options d'application
+            // TableLayoutPanel pour les options d'application
             appTable = new TableLayoutPanel();
             appTable.ColumnCount = 2;
             appTable.RowCount = 2;
@@ -136,11 +136,10 @@ namespace OmniTools
             btnClearLogs.Font = new Font("Segoe UI", 10);
             btnClearLogs.Text = "Effacer les logs";
             btnClearLogs.Dock = DockStyle.Fill;
-            btnClearLogs.FlatStyle = FlatStyle.Flat;
-            btnClearLogs.BackColor = Color.LightGray;
-            btnClearLogs.ForeColor = Color.Black;
             btnClearLogs.Click += BtnClearLogs_Click;
-            // Label description pour effacer les logs
+            ApplyRoundedStyle(btnClearLogs, 10);
+
+            // Label description pour "Effacer les logs"
             Label lblClearLogsDesc = new Label();
             lblClearLogsDesc.Text = "Efface l'historique des logs de l'application.";
             lblClearLogsDesc.Font = new Font("Segoe UI", 9);
@@ -153,11 +152,10 @@ namespace OmniTools
             btnResetSettings.Font = new Font("Segoe UI", 10);
             btnResetSettings.Text = "Réinitialiser";
             btnResetSettings.Dock = DockStyle.Fill;
-            btnResetSettings.FlatStyle = FlatStyle.Flat;
-            btnResetSettings.BackColor = Color.LightGray;
-            btnResetSettings.ForeColor = Color.Black;
             btnResetSettings.Click += BtnResetSettings_Click;
-            // Label description pour la réinitialisation des paramètres
+            ApplyRoundedStyle(btnResetSettings, 10);
+
+            // Label description pour "Réinitialiser"
             Label lblResetDesc = new Label();
             lblResetDesc.Text = "Rétablit les paramètres par défaut et redémarre l'application.";
             lblResetDesc.Font = new Font("Segoe UI", 9);
@@ -178,12 +176,43 @@ namespace OmniTools
             this.Controls.Add(lblHeader);
         }
 
-        private void BtnClearTemp_Click(object sender, EventArgs e)
+        // Applique un style plat avec coins arrondis (style Windows 11) à un bouton
+        private void ApplyRoundedStyle(Button btn, int radius)
         {
-            ClearTemporaryFiles();
-            MessageBox.Show("Les fichiers temporaires ont été nettoyés.", "Succès", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            btn.FlatStyle = FlatStyle.Flat;
+            btn.FlatAppearance.BorderSize = 0;
+            btn.BackColor = Color.LightGray;
+            btn.ForeColor = Color.Black;
+            btn.Resize += (s, e) =>
+            {
+                using (GraphicsPath path = new GraphicsPath())
+                {
+                    path.AddArc(0, 0, radius, radius, 180, 90);
+                    path.AddArc(btn.Width - radius, 0, radius, radius, 270, 90);
+                    path.AddArc(btn.Width - radius, btn.Height - radius, radius, radius, 0, 90);
+                    path.AddArc(0, btn.Height - radius, radius, radius, 90, 90);
+                    path.CloseFigure();
+                    btn.Region = new Region(path);
+                }
+            };
         }
 
+        // Lorsqu'on clique sur "Nettoyer" (fichiers temporaires)
+        private async void BtnClearTemp_Click(object sender, EventArgs e)
+        {
+            ClearTemporaryFiles();
+            string originalText = btnClearTemp.Text;
+            Color originalForeColor = btnClearTemp.ForeColor;
+            btnClearTemp.Text = "Fichiers nettoyés";
+            btnClearTemp.ForeColor = Color.Green;
+            btnClearTemp.Enabled = false;
+            await Task.Delay(3000);
+            btnClearTemp.Text = originalText;
+            btnClearTemp.ForeColor = originalForeColor;
+            btnClearTemp.Enabled = true;
+        }
+
+        // Ouvre le dossier temporaire
         private void BtnOpenTempFolder_Click(object sender, EventArgs e)
         {
             try
@@ -196,21 +225,31 @@ namespace OmniTools
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Erreur lors de l'ouverture du dossier temporaire : {ex.Message}", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Erreur lors de l'ouverture du dossier temporaire : {ex.Message}", 
+                                "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
-        private void BtnClearLogs_Click(object sender, EventArgs e)
+        // Lorsqu'on clique sur "Effacer les logs"
+        private async void BtnClearLogs_Click(object sender, EventArgs e)
         {
             Logger.Clear();
-            MessageBox.Show("Les logs ont été effacés.", "Succès", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            string originalText = btnClearLogs.Text;
+            Color originalForeColor = btnClearLogs.ForeColor;
+            btnClearLogs.Text = "Logs effacés";
+            btnClearLogs.ForeColor = Color.Green;
+            btnClearLogs.Enabled = false;
+            await Task.Delay(3000);
+            btnClearLogs.Text = originalText;
+            btnClearLogs.ForeColor = originalForeColor;
+            btnClearLogs.Enabled = true;
         }
 
         private async void BtnResetSettings_Click(object sender, EventArgs e)
         {
             bool restartCancelled = false;
             
-            // Création du formulaire temporaire
+            // Création d'un formulaire temporaire pour le compte à rebours
             Form autoCloseForm = new Form();
             autoCloseForm.StartPosition = FormStartPosition.CenterScreen;
             autoCloseForm.FormBorderStyle = FormBorderStyle.None;
@@ -218,23 +257,23 @@ namespace OmniTools
             autoCloseForm.Size = new Size(300, 150);
             autoCloseForm.ShowInTaskbar = false;
             
-            // Appliquer des bords arrondis
-            using (System.Drawing.Drawing2D.GraphicsPath path = new System.Drawing.Drawing2D.GraphicsPath())
+            // Appliquer des bords arrondis au formulaire
+            using (GraphicsPath path = new GraphicsPath())
             {
                 int radius = 20;
                 path.StartFigure();
-                path.AddArc(new Rectangle(0, 0, radius, radius), 180, 90);
+                path.AddArc(0, 0, radius, radius, 180, 90);
                 path.AddLine(radius, 0, autoCloseForm.Width - radius, 0);
-                path.AddArc(new Rectangle(autoCloseForm.Width - radius, 0, radius, radius), -90, 90);
+                path.AddArc(autoCloseForm.Width - radius, 0, radius, radius, -90, 90);
                 path.AddLine(autoCloseForm.Width, radius, autoCloseForm.Width, autoCloseForm.Height - radius);
-                path.AddArc(new Rectangle(autoCloseForm.Width - radius, autoCloseForm.Height - radius, radius, radius), 0, 90);
+                path.AddArc(autoCloseForm.Width - radius, autoCloseForm.Height - radius, radius, radius, 0, 90);
                 path.AddLine(autoCloseForm.Width - radius, autoCloseForm.Height, radius, autoCloseForm.Height);
-                path.AddArc(new Rectangle(0, autoCloseForm.Height - radius, radius, radius), 90, 90);
+                path.AddArc(0, autoCloseForm.Height - radius, radius, radius, 90, 90);
                 path.CloseFigure();
                 autoCloseForm.Region = new Region(path);
             }
             
-            // Création d'un label pour afficher le compte à rebours
+            // Label pour afficher le compte à rebours
             Label lblMessage = new Label();
             lblMessage.Font = new Font("Segoe UI", 10);
             lblMessage.TextAlign = ContentAlignment.MiddleCenter;
@@ -243,7 +282,7 @@ namespace OmniTools
             lblMessage.ForeColor = Color.White;
             autoCloseForm.Controls.Add(lblMessage);
             
-            // Création du bouton "Annuler"
+            // Bouton "Annuler"
             Button btnCancel = new Button();
             btnCancel.Text = "Annuler";
             btnCancel.Font = new Font("Segoe UI", 10);
@@ -259,10 +298,8 @@ namespace OmniTools
             };
             autoCloseForm.Controls.Add(btnCancel);
             
-            // Affichage initial du formulaire
+            // Affichage du formulaire et compte à rebours
             autoCloseForm.Show();
-            
-            // Boucle de compte à rebours de 3 à 1
             for (int i = 3; i >= 1; i--)
             {
                 lblMessage.Text = $"L'application va redémarrer dans {i} seconde{(i > 1 ? "s" : "")}...";
@@ -271,7 +308,6 @@ namespace OmniTools
                     break;
             }
             
-            // Si l'utilisateur n'a pas annulé, redémarrer l'application
             if (!restartCancelled)
             {
                 autoCloseForm.Close();
@@ -288,12 +324,21 @@ namespace OmniTools
             {
                 if (Directory.Exists(tempPath))
                 {
+                    // Supprimer les fichiers
                     var files = Directory.GetFiles(tempPath);
                     foreach (var file in files)
                     {
                         File.Delete(file);
                     }
-                    Logger.LogSuccess("Effacement des fichiers réussi :)");
+
+                    // Supprimer les sous-dossiers et leur contenu
+                    var directories = Directory.GetDirectories(tempPath);
+                    foreach (var directory in directories)
+                    {
+                        Directory.Delete(directory, true);
+                    }
+
+                    Logger.LogSuccess("Effacement des fichiers et dossiers réussi :)");
                 }
                 else
                 {
