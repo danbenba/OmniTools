@@ -125,7 +125,7 @@ namespace OmniTools
                     "Aucune connexion Internet détectée. Veuillez vérifier votre connexion.",
                     "Connexion Internet",
                     MessageBoxButtons.OK,
-                    MessageBoxIcon.Warning
+                    MessageBoxIcon.Error
                 );
             }
         }
