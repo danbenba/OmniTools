@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("OmniTools")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0cc5ea5945719c2129dfcbfa0beae7a0c71d1d8f")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f188e4117d1c8d1d81a76845bf5d57f750b65e08")]
 [assembly: System.Reflection.AssemblyProductAttribute("OmniTools")]
 [assembly: System.Reflection.AssemblyTitleAttribute("OmniTools")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

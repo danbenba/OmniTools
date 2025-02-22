@@ -11,11 +11,11 @@ namespace OmniTools
     internal static class Program
     {
         // Version locale de l’application
-        private const string CurrentVersion = "0.9";
+        private const string CurrentVersion = "0.8";
         // Langue courante
         private const string CurrentLanguage = "fr-FR";
 
-        // URL où se trouve la dernière version sous forme de texte (par ex. "0.9")
+        // URL où se trouve la dernière version sous forme de texte (par ex. "0.8")
         private const string VersionUrl = "https://raw.githubusercontent.com/danbenba/OmniTools/refs/heads/project/version";
         
         // URL pointant vers le nouvel exécutable (fichier .exe) à télécharger
