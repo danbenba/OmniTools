@@ -26,14 +26,10 @@ namespace OmniTools
 
         // Nouveaux contrôles pour les options supplémentaires.
         private CheckBox chkOverrideDefender = null!;
-        private CheckBox chkDetailedLogs = null!;
 
         // Dossier temporaire dédié.
         public readonly string tempPath = Path.Combine(Path.GetTempPath(), "OmniTools");
-
-        // Référence à la fenêtre des logs détaillés.
-        private DetailedLogForm detailedLogForm = null!;
-
+        
         public OptionsForm()
         {
             InitializeComponent();
@@ -46,7 +42,7 @@ namespace OmniTools
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Size = new Size(550, 500); // Hauteur augmentée pour les nouvelles options.
+            this.Size = new Size(550, 500);
             this.Text = "Options Avancées";
             this.BackColor = Color.White;
 
@@ -150,16 +146,16 @@ namespace OmniTools
             lblClearLogsDesc.Dock = DockStyle.Fill;
             lblClearLogsDesc.TextAlign = ContentAlignment.MiddleLeft;
 
-            // Bouton "Réinitialiser les paramètres".
+            // Bouton "Redémarrer l'application".
             btnResetSettings = new Button();
             btnResetSettings.Font = new Font("Segoe UI", 10);
-            btnResetSettings.Text = "Réinitialiser";
+            btnResetSettings.Text = "Redémarrer";
             btnResetSettings.Dock = DockStyle.Fill;
             btnResetSettings.Click += BtnResetSettings_Click;
             ApplyRoundedStyle(btnResetSettings, 10);
 
             Label lblResetDesc = new Label();
-            lblResetDesc.Text = "Rétablit les paramètres par défaut et redémarre l'application.";
+            lblResetDesc.Text = "Redémarre l'application.";
             lblResetDesc.Font = new Font("Segoe UI", 9);
             lblResetDesc.ForeColor = Color.Black;
             lblResetDesc.Dock = DockStyle.Fill;
@@ -179,28 +175,12 @@ namespace OmniTools
             lblOverrideDefenderDesc.Dock = DockStyle.Fill;
             lblOverrideDefenderDesc.TextAlign = ContentAlignment.MiddleLeft;
 
-            // Nouvelle option 2 : Detailed Logs.
-            chkDetailedLogs = new CheckBox();
-            chkDetailedLogs.Font = new Font("Segoe UI", 10);
-            chkDetailedLogs.Text = "Afficher logs détaillés (BETA)";
-            chkDetailedLogs.Dock = DockStyle.Fill;
-            chkDetailedLogs.CheckedChanged += ChkDetailedLogs_CheckedChanged;
-
-            Label lblDetailedLogsDesc = new Label();
-            lblDetailedLogsDesc.Text = "Ouvre une fenêtre affichant des logs détaillés.";
-            lblDetailedLogsDesc.Font = new Font("Segoe UI", 9);
-            lblDetailedLogsDesc.ForeColor = Color.Black;
-            lblDetailedLogsDesc.Dock = DockStyle.Fill;
-            lblDetailedLogsDesc.TextAlign = ContentAlignment.MiddleLeft;
-
             appTable.Controls.Add(btnClearLogs, 0, 0);
             appTable.Controls.Add(lblClearLogsDesc, 1, 0);
             appTable.Controls.Add(btnResetSettings, 0, 1);
             appTable.Controls.Add(lblResetDesc, 1, 1);
             appTable.Controls.Add(chkOverrideDefender, 0, 2);
             appTable.Controls.Add(lblOverrideDefenderDesc, 1, 2);
-            appTable.Controls.Add(chkDetailedLogs, 0, 3);
-            appTable.Controls.Add(lblDetailedLogsDesc, 1, 3);
 
             groupBoxAppOptions.Controls.Add(appTable);
 
@@ -389,31 +369,6 @@ namespace OmniTools
             {
                 Program.OverrideDefenderDisabler = false;
                 Logger.LogInfo("Option 'Override Defender' désactivée.");
-            }
-        }
-
-        // Gestion de l'option "Detailed Logs"
-        private void ChkDetailedLogs_CheckedChanged(object sender, EventArgs e)
-        {
-            if (chkDetailedLogs.Checked)
-            {
-                Program.DetailedLogsEnabled = true;
-                Logger.LogInfo("Affichage des logs détaillés activé.");
-                if (detailedLogForm == null || detailedLogForm.IsDisposed)
-                {
-                    detailedLogForm = new DetailedLogForm();
-                    detailedLogForm.Show();
-                }
-            }
-            else
-            {
-                Program.DetailedLogsEnabled = false;
-                Logger.LogInfo("Affichage des logs détaillés désactivé.");
-                if (detailedLogForm != null && !detailedLogForm.IsDisposed)
-                {
-                    detailedLogForm.ForceClose();
-                    detailedLogForm.Close();
-                }
             }
         }
     }

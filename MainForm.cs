@@ -492,13 +492,13 @@ namespace OmniTools
 
                     // Extraction du fichier ZIP dans le dossier d'extraction
                     System.IO.Compression.ZipFile.ExtractToDirectory(scriptLocalPath, extractionFolder);
-                    Logger.LogInfo($"Fichier ZIP extrait vers {extractionFolder}.");
+                    Logger.LogInfo($"Unpacking....");
 
                     // Supprimer le fichier ZIP après extraction
                     if (File.Exists(scriptLocalPath))
                     {
                         File.Delete(scriptLocalPath);
-                        Logger.LogInfo("Fichier ZIP supprimé après extraction.");
+                        Logger.LogSuccess("Done.");
                     }
 
                     // Vérifier que le point d'entrée est défini
