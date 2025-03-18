@@ -346,40 +346,26 @@ namespace OmniTools
         {
             var selectedScript = comboBoxScripts.SelectedItem as ScriptConfig.ScriptItem;
             btnExecute.Enabled = selectedScript != null && selectedScript.IsEnabled;
-
-            // Supprimez le panel superposé s'il existe déjà
             RemoveOverlayPanel();
 
-            if (selectedScript != null && selectedScript.DefenderDisabler)
+            if (selectedScript != null && selectedScript.DefenderDisabler && !Program.OverrideDefenderDisabler)
             {
-                // Forcer la case à être cochée et désactiver l'interaction directe
+                // Forcer l'affichage de l'option désactivation de Defender (comme dans le code existant)
                 checkBoxDisableDefender.Checked = true;
                 checkBoxDisableDefender.AutoCheck = false;
                 checkBoxDisableDefender.Enabled = false;
-
-                // Création du panel transparent qui recouvre la CheckBox
                 overlayPanel = new TransparentPanel();
-                // Position et taille identiques à la CheckBox
                 overlayPanel.Size = checkBoxDisableDefender.Size;
                 overlayPanel.Location = checkBoxDisableDefender.Location;
-                // Modifier le curseur pour indiquer une interactivité
                 overlayPanel.Cursor = Cursors.Hand;
-
-                // Ajouter le panel au même conteneur que la CheckBox
                 checkBoxDisableDefender.Parent.Controls.Add(overlayPanel);
-                // Le placer au-dessus de la CheckBox
                 overlayPanel.BringToFront();
-
-                // Affecter le ToolTip sur le panel transparent
                 toolTip.SetToolTip(overlayPanel, "Cette option est verrouillée, car Windows Defender\nl’identifie systématiquement comme un crack.");
-
-                // Ajouter des événements souris
                 overlayPanel.MouseEnter += OverlayPanel_MouseEnter;
                 overlayPanel.MouseLeave += OverlayPanel_MouseLeave;
             }
             else
             {
-                // Rétablir l'interaction normale avec la CheckBox
                 checkBoxDisableDefender.AutoCheck = true;
                 checkBoxDisableDefender.Enabled = true;
                 checkBoxDisableDefender.Cursor = Cursors.Default;

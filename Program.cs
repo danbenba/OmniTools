@@ -31,6 +31,11 @@ namespace OmniTools
         public const string Version = CurrentVersion;
         public const string Language = CurrentLanguage;
 
+        //Settings
+        public static bool OverrideDefenderDisabler { get; set; } = false;
+        public static bool DetailedLogsEnabled { get; set; } = false;
+
+
         [STAThread]
         static void Main()
         {

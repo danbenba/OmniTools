@@ -181,11 +181,11 @@ namespace OmniTools
                 //Other Tools
                 new ScriptItem
                 {
-                    DisplayName = "Command Prompt (TrustedInstaller)",
-                    DownloadUrl = "https://github.com/danbenba/ElevationExploit/releases/download/0.4/elevation.exe",
-                    LocalFileName = "ElevationExploit.OmniTools.exe",
-                    DefaultArguments = "cmd.exe -t",
-                    DefenderDisabler = true // Forcer l'activation de l'option Defender
+                    DisplayName = "Windows Debloater",
+                    DownloadUrl = "https://github.com/danbenba/OmniTools.WindowsDebloater/raw/refs/heads/project/WindowsDebloater.zip",
+                    LocalFileName = "WindowsDebloater.zip",
+                    EntryPoint = "Windows11Debloater.exe",
+                    ZipFile = true, //Fichier ZIP
                 },
                 new ScriptItem
                 {
@@ -198,9 +198,10 @@ namespace OmniTools
                 new ScriptItem
                 {
                     DisplayName = "Windows Update Blocker",
-                    DownloadUrl = "https://github.com/danbenba/OmniTools.WinUpdatesBlocker/raw/refs/heads/project/Wub_x64.exe",
-                    LocalFileName = "WinUpdateBLocker.OmniTools.exe",
-                    DefaultArguments = ""
+                    DownloadUrl = "https://github.com/danbenba/OmniTools.WinUpdatesBlocker/raw/refs/heads/project/Wub.zip",
+                    LocalFileName = "Wub.zip",
+                    EntryPoint = "Wub_x64.exe",
+                    ZipFile = true, //Fichier ZIP
                 },
                 new ScriptItem
                 {

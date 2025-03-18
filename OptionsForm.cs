@@ -1,3 +1,4 @@
+
 using System;
 using System.Diagnostics;
 using System.Drawing;
@@ -10,21 +11,28 @@ namespace OmniTools
 {
     public class OptionsForm : Form
     {
-        private GroupBox groupBoxTempFiles;
-        private GroupBox groupBoxAppOptions;
-        private TableLayoutPanel tempTable;
-        private TableLayoutPanel appTable;
-        private Label lblHeader;
+        // Champs pour les différents contrôles de l'interface.
+        private GroupBox groupBoxTempFiles = null!;
+        private GroupBox groupBoxAppOptions = null!;
+        private TableLayoutPanel tempTable = null!;
+        private TableLayoutPanel appTable = null!;
+        private Label lblHeader = null!;
 
-        // Boutons de la section "Fichiers temporaires"
-        private Button btnClearTemp;
-        private Button btnOpenTempFolder;
-        // Boutons de la section "Options de l'application"
-        private Button btnClearLogs;
-        private Button btnResetSettings;
+        // Boutons existants pour la gestion des fichiers temporaires et logs.
+        private Button btnClearTemp = null!;
+        private Button btnOpenTempFolder = null!;
+        private Button btnClearLogs = null!;
+        private Button btnResetSettings = null!;
 
-        // Dossier temporaire dédié
+        // Nouveaux contrôles pour les options supplémentaires.
+        private CheckBox chkOverrideDefender = null!;
+        private CheckBox chkDetailedLogs = null!;
+
+        // Dossier temporaire dédié.
         public readonly string tempPath = Path.Combine(Path.GetTempPath(), "OmniTools");
+
+        // Référence à la fenêtre des logs détaillés.
+        private DetailedLogForm detailedLogForm = null!;
 
         public OptionsForm()
         {
@@ -33,16 +41,16 @@ namespace OmniTools
 
         private void InitializeComponent()
         {
-            // Configuration générale de la fenêtre
+            // Configuration générale de la fenêtre.
             this.StartPosition = FormStartPosition.CenterParent;
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Size = new Size(550, 400);
+            this.Size = new Size(550, 500); // Hauteur augmentée pour les nouvelles options.
             this.Text = "Options Avancées";
             this.BackColor = Color.White;
 
-            // Label d'en-tête
+            // En-tête.
             lblHeader = new Label();
             lblHeader.Text = "Options Avancées";
             lblHeader.Font = new Font("Segoe UI", 18, FontStyle.Bold);
@@ -51,7 +59,7 @@ namespace OmniTools
             lblHeader.Dock = DockStyle.Top;
             lblHeader.Height = 60;
 
-            // GroupBox pour la gestion des fichiers temporaires
+            // GroupBox pour la gestion des fichiers temporaires.
             groupBoxTempFiles = new GroupBox();
             groupBoxTempFiles.Text = "Gestion des fichiers temporaires";
             groupBoxTempFiles.Font = new Font("Segoe UI", 12, FontStyle.Bold);
@@ -61,7 +69,6 @@ namespace OmniTools
             groupBoxTempFiles.Height = 150;
             groupBoxTempFiles.Padding = new Padding(10);
 
-            // TableLayoutPanel pour les fichiers temporaires
             tempTable = new TableLayoutPanel();
             tempTable.ColumnCount = 2;
             tempTable.RowCount = 2;
@@ -72,7 +79,6 @@ namespace OmniTools
             tempTable.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
             tempTable.BackColor = Color.White;
 
-            // Bouton "Nettoyer les fichiers temporaires"
             btnClearTemp = new Button();
             btnClearTemp.Font = new Font("Segoe UI", 10);
             btnClearTemp.Text = "Nettoyer";
@@ -80,7 +86,6 @@ namespace OmniTools
             btnClearTemp.Click += BtnClearTemp_Click;
             ApplyRoundedStyle(btnClearTemp, 10);
 
-            // Label description pour "Nettoyer"
             Label lblClearTempDesc = new Label();
             lblClearTempDesc.Text = "Supprime tous les fichiers du dossier temporaire.";
             lblClearTempDesc.Font = new Font("Segoe UI", 9);
@@ -88,7 +93,6 @@ namespace OmniTools
             lblClearTempDesc.Dock = DockStyle.Fill;
             lblClearTempDesc.TextAlign = ContentAlignment.MiddleLeft;
 
-            // Bouton "Ouvrir le dossier temporaire"
             btnOpenTempFolder = new Button();
             btnOpenTempFolder.Font = new Font("Segoe UI", 10);
             btnOpenTempFolder.Text = "Ouvrir le dossier";
@@ -96,7 +100,6 @@ namespace OmniTools
             btnOpenTempFolder.Click += BtnOpenTempFolder_Click;
             ApplyRoundedStyle(btnOpenTempFolder, 10);
 
-            // Label description pour "Ouvrir le dossier"
             Label lblOpenTempDesc = new Label();
             lblOpenTempDesc.Text = "Ouvre le dossier contenant les fichiers temporaires.";
             lblOpenTempDesc.Font = new Font("Segoe UI", 9);
@@ -104,14 +107,13 @@ namespace OmniTools
             lblOpenTempDesc.Dock = DockStyle.Fill;
             lblOpenTempDesc.TextAlign = ContentAlignment.MiddleLeft;
 
-            // Ajout des contrôles dans tempTable
             tempTable.Controls.Add(btnClearTemp, 0, 0);
             tempTable.Controls.Add(lblClearTempDesc, 1, 0);
             tempTable.Controls.Add(btnOpenTempFolder, 0, 1);
             tempTable.Controls.Add(lblOpenTempDesc, 1, 1);
             groupBoxTempFiles.Controls.Add(tempTable);
 
-            // GroupBox pour les options de l'application
+            // GroupBox pour les options de l'application.
             groupBoxAppOptions = new GroupBox();
             groupBoxAppOptions.Text = "Options de l'application";
             groupBoxAppOptions.Font = new Font("Segoe UI", 12, FontStyle.Bold);
@@ -120,18 +122,20 @@ namespace OmniTools
             groupBoxAppOptions.Dock = DockStyle.Fill;
             groupBoxAppOptions.Padding = new Padding(10);
 
-            // TableLayoutPanel pour les options d'application
+            // Mise à jour du TableLayoutPanel pour 4 lignes.
             appTable = new TableLayoutPanel();
             appTable.ColumnCount = 2;
-            appTable.RowCount = 2;
+            appTable.RowCount = 4;
             appTable.Dock = DockStyle.Fill;
             appTable.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 40F));
             appTable.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 60F));
-            appTable.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            appTable.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
+            appTable.RowStyles.Add(new RowStyle(SizeType.Percent, 25F));
+            appTable.RowStyles.Add(new RowStyle(SizeType.Percent, 25F));
+            appTable.RowStyles.Add(new RowStyle(SizeType.Percent, 25F));
+            appTable.RowStyles.Add(new RowStyle(SizeType.Percent, 25F));
             appTable.BackColor = Color.White;
 
-            // Bouton "Effacer les logs"
+            // Bouton "Effacer les logs".
             btnClearLogs = new Button();
             btnClearLogs.Font = new Font("Segoe UI", 10);
             btnClearLogs.Text = "Effacer les logs";
@@ -139,7 +143,6 @@ namespace OmniTools
             btnClearLogs.Click += BtnClearLogs_Click;
             ApplyRoundedStyle(btnClearLogs, 10);
 
-            // Label description pour "Effacer les logs"
             Label lblClearLogsDesc = new Label();
             lblClearLogsDesc.Text = "Efface l'historique des logs de l'application.";
             lblClearLogsDesc.Font = new Font("Segoe UI", 9);
@@ -147,7 +150,7 @@ namespace OmniTools
             lblClearLogsDesc.Dock = DockStyle.Fill;
             lblClearLogsDesc.TextAlign = ContentAlignment.MiddleLeft;
 
-            // Bouton "Réinitialiser les paramètres"
+            // Bouton "Réinitialiser les paramètres".
             btnResetSettings = new Button();
             btnResetSettings.Font = new Font("Segoe UI", 10);
             btnResetSettings.Text = "Réinitialiser";
@@ -155,7 +158,6 @@ namespace OmniTools
             btnResetSettings.Click += BtnResetSettings_Click;
             ApplyRoundedStyle(btnResetSettings, 10);
 
-            // Label description pour "Réinitialiser"
             Label lblResetDesc = new Label();
             lblResetDesc.Text = "Rétablit les paramètres par défaut et redémarre l'application.";
             lblResetDesc.Font = new Font("Segoe UI", 9);
@@ -163,20 +165,51 @@ namespace OmniTools
             lblResetDesc.Dock = DockStyle.Fill;
             lblResetDesc.TextAlign = ContentAlignment.MiddleLeft;
 
-            // Ajout des contrôles dans appTable
+            // Nouvelle option 1 : Override Defender.
+            chkOverrideDefender = new CheckBox();
+            chkOverrideDefender.Font = new Font("Segoe UI", 10);
+            chkOverrideDefender.Text = "Ne pas forcer la désactivation de Windows Defender";
+            chkOverrideDefender.Dock = DockStyle.Fill;
+            chkOverrideDefender.CheckedChanged += ChkOverrideDefender_CheckedChanged;
+
+            Label lblOverrideDefenderDesc = new Label();
+            lblOverrideDefenderDesc.Text = "Ignore l'obligation de désactiver Windows Defender.";
+            lblOverrideDefenderDesc.Font = new Font("Segoe UI", 9);
+            lblOverrideDefenderDesc.ForeColor = Color.Black;
+            lblOverrideDefenderDesc.Dock = DockStyle.Fill;
+            lblOverrideDefenderDesc.TextAlign = ContentAlignment.MiddleLeft;
+
+            // Nouvelle option 2 : Detailed Logs.
+            chkDetailedLogs = new CheckBox();
+            chkDetailedLogs.Font = new Font("Segoe UI", 10);
+            chkDetailedLogs.Text = "Afficher logs détaillés (BETA)";
+            chkDetailedLogs.Dock = DockStyle.Fill;
+            chkDetailedLogs.CheckedChanged += ChkDetailedLogs_CheckedChanged;
+
+            Label lblDetailedLogsDesc = new Label();
+            lblDetailedLogsDesc.Text = "Ouvre une fenêtre affichant des logs détaillés.";
+            lblDetailedLogsDesc.Font = new Font("Segoe UI", 9);
+            lblDetailedLogsDesc.ForeColor = Color.Black;
+            lblDetailedLogsDesc.Dock = DockStyle.Fill;
+            lblDetailedLogsDesc.TextAlign = ContentAlignment.MiddleLeft;
+
             appTable.Controls.Add(btnClearLogs, 0, 0);
             appTable.Controls.Add(lblClearLogsDesc, 1, 0);
             appTable.Controls.Add(btnResetSettings, 0, 1);
             appTable.Controls.Add(lblResetDesc, 1, 1);
+            appTable.Controls.Add(chkOverrideDefender, 0, 2);
+            appTable.Controls.Add(lblOverrideDefenderDesc, 1, 2);
+            appTable.Controls.Add(chkDetailedLogs, 0, 3);
+            appTable.Controls.Add(lblDetailedLogsDesc, 1, 3);
+
             groupBoxAppOptions.Controls.Add(appTable);
 
-            // Ajout des GroupBoxes et du header à la fenêtre
+            // Ajout des contrôles à la fenêtre.
             this.Controls.Add(groupBoxAppOptions);
             this.Controls.Add(groupBoxTempFiles);
             this.Controls.Add(lblHeader);
         }
 
-        // Applique un style plat avec coins arrondis (style Windows 11) à un bouton
         private void ApplyRoundedStyle(Button btn, int radius)
         {
             btn.FlatStyle = FlatStyle.Flat;
@@ -197,7 +230,6 @@ namespace OmniTools
             };
         }
 
-        // Lorsqu'on clique sur "Nettoyer" (fichiers temporaires)
         private async void BtnClearTemp_Click(object sender, EventArgs e)
         {
             ClearTemporaryFiles();
@@ -212,7 +244,6 @@ namespace OmniTools
             btnClearTemp.Enabled = true;
         }
 
-        // Ouvre le dossier temporaire
         private void BtnOpenTempFolder_Click(object sender, EventArgs e)
         {
             try
@@ -225,12 +256,11 @@ namespace OmniTools
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Erreur lors de l'ouverture du dossier temporaire : {ex.Message}", 
+                MessageBox.Show($"Erreur lors de l'ouverture du dossier temporaire : {ex.Message}",
                                 "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
-        // Lorsqu'on clique sur "Effacer les logs"
         private async void BtnClearLogs_Click(object sender, EventArgs e)
         {
             Logger.Clear();
@@ -248,16 +278,13 @@ namespace OmniTools
         private async void BtnResetSettings_Click(object sender, EventArgs e)
         {
             bool restartCancelled = false;
-            
-            // Création d'un formulaire temporaire pour le compte à rebours
             Form autoCloseForm = new Form();
             autoCloseForm.StartPosition = FormStartPosition.CenterScreen;
             autoCloseForm.FormBorderStyle = FormBorderStyle.None;
             autoCloseForm.BackColor = Color.Black;
             autoCloseForm.Size = new Size(300, 150);
             autoCloseForm.ShowInTaskbar = false;
-            
-            // Appliquer des bords arrondis au formulaire
+
             using (GraphicsPath path = new GraphicsPath())
             {
                 int radius = 20;
@@ -272,8 +299,7 @@ namespace OmniTools
                 path.CloseFigure();
                 autoCloseForm.Region = new Region(path);
             }
-            
-            // Label pour afficher le compte à rebours
+
             Label lblMessage = new Label();
             lblMessage.Font = new Font("Segoe UI", 10);
             lblMessage.TextAlign = ContentAlignment.MiddleCenter;
@@ -281,8 +307,7 @@ namespace OmniTools
             lblMessage.Height = 60;
             lblMessage.ForeColor = Color.White;
             autoCloseForm.Controls.Add(lblMessage);
-            
-            // Bouton "Annuler"
+
             Button btnCancel = new Button();
             btnCancel.Text = "Annuler";
             btnCancel.Font = new Font("Segoe UI", 10);
@@ -291,14 +316,13 @@ namespace OmniTools
             btnCancel.ForeColor = Color.Black;
             btnCancel.FlatStyle = FlatStyle.Flat;
             btnCancel.Location = new Point((autoCloseForm.Width - btnCancel.Width) / 2, autoCloseForm.Height - btnCancel.Height - 20);
-            btnCancel.Click += (s, args) => 
-            { 
-                restartCancelled = true; 
-                autoCloseForm.Close(); 
+            btnCancel.Click += (s, args) =>
+            {
+                restartCancelled = true;
+                autoCloseForm.Close();
             };
             autoCloseForm.Controls.Add(btnCancel);
-            
-            // Affichage du formulaire et compte à rebours
+
             autoCloseForm.Show();
             for (int i = 3; i >= 1; i--)
             {
@@ -307,7 +331,7 @@ namespace OmniTools
                 if (restartCancelled)
                     break;
             }
-            
+
             if (!restartCancelled)
             {
                 autoCloseForm.Close();
@@ -315,29 +339,22 @@ namespace OmniTools
             }
         }
 
-        /// <summary>
-        /// Efface tous les fichiers temporaires de l'application.
-        /// </summary>
         public void ClearTemporaryFiles()
         {
             try
             {
                 if (Directory.Exists(tempPath))
                 {
-                    // Supprimer les fichiers
                     var files = Directory.GetFiles(tempPath);
                     foreach (var file in files)
                     {
                         File.Delete(file);
                     }
-
-                    // Supprimer les sous-dossiers et leur contenu
                     var directories = Directory.GetDirectories(tempPath);
                     foreach (var directory in directories)
                     {
                         Directory.Delete(directory, true);
                     }
-
                     Logger.LogSuccess("Effacement des fichiers et dossiers réussi :)");
                 }
                 else
@@ -348,6 +365,55 @@ namespace OmniTools
             catch (Exception ex)
             {
                 Logger.LogError($"Erreur lors de l'effacement des fichiers temporaires : {ex.Message}");
+            }
+        }
+
+        // Gestion de l'option "Override Defender"
+        private void ChkOverrideDefender_CheckedChanged(object sender, EventArgs e)
+        {
+            if (chkOverrideDefender.Checked)
+            {
+                var result = MessageBox.Show("Voulez-vous vraiment désactiver l'obligation de désactiver Windows Defender ?",
+                                             "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                if (result == DialogResult.Yes)
+                {
+                    Program.OverrideDefenderDisabler = true;
+                    Logger.LogInfo("Option 'Override Defender' activée.");
+                }
+                else
+                {
+                    chkOverrideDefender.Checked = false;
+                }
+            }
+            else
+            {
+                Program.OverrideDefenderDisabler = false;
+                Logger.LogInfo("Option 'Override Defender' désactivée.");
+            }
+        }
+
+        // Gestion de l'option "Detailed Logs"
+        private void ChkDetailedLogs_CheckedChanged(object sender, EventArgs e)
+        {
+            if (chkDetailedLogs.Checked)
+            {
+                Program.DetailedLogsEnabled = true;
+                Logger.LogInfo("Affichage des logs détaillés activé.");
+                if (detailedLogForm == null || detailedLogForm.IsDisposed)
+                {
+                    detailedLogForm = new DetailedLogForm();
+                    detailedLogForm.Show();
+                }
+            }
+            else
+            {
+                Program.DetailedLogsEnabled = false;
+                Logger.LogInfo("Affichage des logs détaillés désactivé.");
+                if (detailedLogForm != null && !detailedLogForm.IsDisposed)
+                {
+                    detailedLogForm.ForceClose();
+                    detailedLogForm.Close();
+                }
             }
         }
     }
