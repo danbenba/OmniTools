@@ -13,12 +13,16 @@ namespace OmniTools
         // Classe interne décrivant un script
         public class ScriptItem
         {
-            public string DisplayName { get; set; }      // Nom affiché dans l'interface (ComboBox)
-            public string DownloadUrl { get; set; }      // URL de téléchargement
-            public string LocalFileName { get; set; }    // Nom du fichier local
+            public string DisplayName { get; set; }            // Nom affiché dans l'interface (ComboBox)
+            public string DownloadUrl { get; set; }            // URL de téléchargement
+            public string LocalFileName { get; set; }          // Nom du fichier local
             public string DefaultArguments { get; set; } = ""; // Arguments par défaut à passer
-            public bool IsEnabled { get; set; } = true;  
-            public bool DefenderDisabler { get; set; } = false; // Propriété pour forcer l'activation du désactivateur de Defender
+            public bool IsEnabled { get; set; } = true;
+            public bool DefenderDisabler { get; set; } = false; // Forcer l'activation de l'option Defender
+
+            // Propriétés pour la gestion des ZIP
+            public bool ZipFile { get; set; } = false;          // Indique que le fichier à télécharger est un ZIP
+            public string EntryPoint { get; set; } = "";        // Chemin relatif du fichier à exécuter dans le ZIP extrait
         }
 
         /// <summary>
@@ -151,11 +155,14 @@ namespace OmniTools
                 },
                 new ScriptItem
                 {
-                    DisplayName = "Driver Installer",
-                    DownloadUrl = "https://github.com/danbenba/OmniTools.DriverInstaller/releases/download/lasted/DriverInstaller.exe",
-                    LocalFileName = "DriverInstaller.OmniTools.exe",
+                    DisplayName = "Driver Updater (DriverEasy PRO)",
+                    DownloadUrl = "https://github.com/danbenba/OmniTools.DriverInstaller/raw/refs/heads/project/DriverEasy.zip",
+                    LocalFileName = "DriverEasy.zip",
+                    EntryPoint = "DriverEasyProPortable.exe",
+                    ZipFile = true, //Fichier ZIP
                     DefenderDisabler = true // Forcer l'activation de l'option Defender
                 },
+
                 new ScriptItem
                 {
                     DisplayName = "Troubleshoot",
@@ -172,6 +179,14 @@ namespace OmniTools
                 },
 
                 //Other Tools
+                new ScriptItem
+                {
+                    DisplayName = "Command Prompt (TrustedInstaller)",
+                    DownloadUrl = "https://github.com/danbenba/ElevationExploit/releases/download/0.4/elevation.exe",
+                    LocalFileName = "ElevationExploit.OmniTools.exe",
+                    DefaultArguments = "cmd.exe -t",
+                    DefenderDisabler = true // Forcer l'activation de l'option Defender
+                },
                 new ScriptItem
                 {
                     DisplayName = "Command Prompt (TrustedInstaller)",

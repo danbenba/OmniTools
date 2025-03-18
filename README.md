@@ -210,7 +210,7 @@ En complément, j’ai également conçu des scripts pour adapter certains progr
 
 - [🔧 Troubleshoot (RepairKit)](https://github.com/danbenba/OmniTools.Troubleshoot) – Outil de réparation Windows  
 - [⚙️ Windows Tweaks (Winutil)](https://github.com/danbenba/OmniTools.WindowsTweaks) – Outil de personnalisation et d’optimisation de Windows  
-- [📥 IoBit Driver Installer 12 Crack (PortableApps)](https://github.com/danbenba/OmniTools.DriverInstaller) – Outil d’installation automatique des pilotes  
+- [📥 DriverEasy Professional (PortableApps)](https://github.com/danbenba/OmniTools.DriverInstaller) – Outil d’installation automatique des pilotes  
 
 ### 📝 **Liens des scripts que j’ai développés**  
 

@@ -415,7 +415,7 @@ namespace OmniTools
         /// Si l'opération est en cours (bouton affichant "Cancel"), l'annule.
         /// </summary>
         private async void BtnExecute_Click(object sender, EventArgs e)
-        { 
+        {
             // Si une opération est en cours, le bouton agit en mode "Cancel"
             if (isOperationInProgress)
             {
@@ -432,12 +432,11 @@ namespace OmniTools
                 return;
             }
 
-            
-
+            // Si la case "Disable Defender" est cochée, avertir l'utilisateur
             if (checkBoxDisableDefender.Checked)
             {
                 DialogResult warnprompt = MessageBox.Show(
-                    $"Attention !\nNous allons procéder à la désactivation de Windows Defender. Une fois Windows Defender désactivé, un message de confirmation apparaîtra pour lancer le programme.",
+                    "Attention !\nNous allons procéder à la désactivation de Windows Defender. Une fois Windows Defender désactivé, un message de confirmation apparaîtra pour lancer le programme.",
                     "Attention",
                     MessageBoxButtons.OKCancel,
                     MessageBoxIcon.Warning
@@ -453,6 +452,7 @@ namespace OmniTools
                 await ExecuteRegistryCommands("disable");
             }
 
+            // Demander confirmation à l'utilisateur
             DialogResult dr = MessageBox.Show(
                 $"Voulez-vous vraiment exécuter '{selectedScript.DisplayName}' ?",
                 "Confirmation",
@@ -466,19 +466,19 @@ namespace OmniTools
                 return;
             }
 
-            // Mise à jour de l'interface : désactivation de la liste et passage du bouton en mode Cancel
+            // Mise à jour de l'interface
             comboBoxScripts.Enabled = false;
             btnExecute.Text = "Cancel";
             isOperationInProgress = true;
             cancellationTokenSource = new CancellationTokenSource();
 
+            // Chemin local de sauvegarde du script téléchargé
             string scriptLocalPath = Path.Combine(tempPath, selectedScript.LocalFileName);
 
-            // Téléchargement du script avec prise en charge de l'annulation
+            // Téléchargement du script avec gestion de l'annulation
             bool downloadSuccess = await DownloadFileWithProgressAsync(selectedScript.DownloadUrl, scriptLocalPath, cancellationTokenSource.Token);
             if (!downloadSuccess)
             {
-                // Si le téléchargement a été annulé, ne pas afficher de message d'erreur
                 if (!cancellationTokenSource.Token.IsCancellationRequested)
                 {
                     Logger.LogError($"Échec du téléchargement de '{selectedScript.DisplayName}'.");
@@ -489,17 +489,74 @@ namespace OmniTools
                 return;
             }
 
-            // Exécution du script téléchargé
-            bool scriptExecuted = await ExecuteScriptAsync(scriptLocalPath, selectedScript.DefaultArguments, selectedScript.DisplayName);
-            if (!scriptExecuted)
+            // Vérifier si le fichier téléchargé est un ZIP à extraire
+            if (selectedScript.ZipFile)
             {
-                Logger.LogError($"Échec de l'exécution de '{selectedScript.DisplayName}'.");
+                try
+                {
+                    // Détermine le dossier d'extraction en se basant sur le nom du fichier ZIP (sans extension)
+                    string extractionFolder = Path.Combine(tempPath, Path.GetFileNameWithoutExtension(selectedScript.LocalFileName));
+                    
+                    // Supprime le dossier existant s'il existe afin de remplacer les fichiers existants
+                    if (Directory.Exists(extractionFolder))
+                    {
+                        Directory.Delete(extractionFolder, true);
+                    }
+                    Directory.CreateDirectory(extractionFolder);
+
+                    // Extraction du fichier ZIP dans le dossier d'extraction
+                    System.IO.Compression.ZipFile.ExtractToDirectory(scriptLocalPath, extractionFolder);
+                    Logger.LogInfo($"Fichier ZIP extrait vers {extractionFolder}.");
+
+                    // Supprimer le fichier ZIP après extraction
+                    if (File.Exists(scriptLocalPath))
+                    {
+                        File.Delete(scriptLocalPath);
+                        Logger.LogInfo("Fichier ZIP supprimé après extraction.");
+                    }
+
+                    // Vérifier que le point d'entrée est défini
+                    if (string.IsNullOrEmpty(selectedScript.EntryPoint))
+                    {
+                        Logger.LogError("Aucun point d'entrée spécifié pour le fichier ZIP.");
+                        return;
+                    }
+                    
+                    // Construire le chemin complet du fichier à exécuter
+                    string entryFullPath = Path.Combine(extractionFolder, selectedScript.EntryPoint);
+                    if (!File.Exists(entryFullPath))
+                    {
+                        Logger.LogError($"Le fichier spécifié comme point d'entrée n'existe pas : {entryFullPath}");
+                        return;
+                    }
+                    
+                    // Exécuter le fichier extrait
+                    bool scriptExecuted = await ExecuteScriptAsync(entryFullPath, selectedScript.DefaultArguments, selectedScript.DisplayName);
+                    if (!scriptExecuted)
+                    {
+                        Logger.LogError($"Échec de l'exécution de '{selectedScript.DisplayName}' (ZIP).");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError($"Erreur lors de l'extraction ou de l'exécution du ZIP : {ex.Message}");
+                }
+            }
+            else
+            {
+                // Traitement classique pour un fichier non-ZIP
+                bool scriptExecuted = await ExecuteScriptAsync(scriptLocalPath, selectedScript.DefaultArguments, selectedScript.DisplayName);
+                if (!scriptExecuted)
+                {
+                    Logger.LogError($"Échec de l'exécution de '{selectedScript.DisplayName}'.");
+                }
             }
 
+            // Si Windows Defender a été désactivé, le réactiver après l'exécution
             if (checkBoxDisableDefender.Checked)
             {
                 DialogResult warnprompt2 = MessageBox.Show(
-                    $"Attention !\nNous allons procéder à la réactivation de Windows Defender.",
+                    "Attention !\nNous allons procéder à la réactivation de Windows Defender.",
                     "Attention",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Warning
@@ -509,6 +566,7 @@ namespace OmniTools
                 await ExecuteRegistryCommands("enable");
             }
 
+            // Si l'option de redémarrage est activée, initier le redémarrage du système
             if (checkBoxRestart.Checked)
             {
                 Logger.LogInfo("Redémarrage du système initié...");
@@ -526,6 +584,7 @@ namespace OmniTools
             comboBoxScripts.Enabled = true;
             btnExecute.Text = "Execute";
         }
+
 
         private void BtnExit_Click(object sender, EventArgs e)
         {
