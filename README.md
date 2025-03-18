@@ -46,7 +46,7 @@
 - [📜 License](#license)
 - [⚠️ Avertissement](#avertissement)
 - [📷 Images](#images)
-- [👤 Auteur](#auteur)
+- [👤 Crédit](#auteur)
 
 ---
 
@@ -192,9 +192,9 @@ Vous pouvez donc éditer ou créer votre propre `playloads.json` :
 
 <h2 id="notes-du-projet">📝 Notes du projet</h2>
 
-Ce projet a été développé sur une période de deux mois. Il intègre des scripts tiers créés par d'autres développeurs, tels que *MAS* ou *DriverInstaller* de *PortableApps*, ainsi que plusieurs autres outils.  
+Ce projet a été développé sur une période de deux mois. Il intègre des scripts tiers créés par d'autres développeurs, tels que *MAS* ou *DriverEasy* de *PortableApps*, ainsi que plusieurs autres outils.  
 
-En complément, j’ai également conçu des scripts pour adapter certains programmes à *OmniTools*. Ces scripts peuvent être entièrement personnalisés et créés par moi-même, ou bien servir à faciliter l’installation de logiciels existants. Par exemple, pour *Windows Tweaker*, *OmniTools* télécharge automatiquement un fichier `.ps1` et l’adapte pour assurer une compatibilité optimale.  
+En complément, j’ai également conçu des scripts pour adapter certains programmes à *OmniTools*. Ces scripts peuvent être entièrement personnalisés et créés par moi-même, ou bien servir à faciliter l’installation de logiciels existants. Par exemple, pour *Windows Tweaker*, *OmniTools* télécharge automatiquement un fichier `.ps1` et l’adapte pour assurer une compatibilité optimale, ou encore un le téléchargement et l'extraction automatique de fichier ZIP.
 
 *OmniTools* est le successeur de *WinActTool*, qui souffrait de nombreux problèmes : manque d’optimisation, bugs fréquents et absence de code open-source. Cette nouvelle version est bien plus stable et performante, une véritable évolution (WinActTool 4.0). 🚀  
 
@@ -263,7 +263,7 @@ Ce projet est distribué sous la licence **MIT**. Consultez le fichier [LICENSE]
 
 ---
 
-<h2 id="images">📷 Images</h2>
+<h2 id="images">📷 Images (0.6 - OBSOLETE)</h2>
 
 ![image0](https://github.com/user-attachments/assets/b105e051-4589-4184-be54-147730778855)
 ![image1](https://github.com/user-attachments/assets/92bc16dd-5b96-4711-94d3-3770820b2712)
@@ -272,7 +272,7 @@ Ce projet est distribué sous la licence **MIT**. Consultez le fichier [LICENSE]
 
 ---
 
-<h2 id="auteur">👤 Auteur</h2>
+<h2 id="auteur">👤 Crédit</h2>
 
 Développé par **[danbenba](https://github.com/danbenba)**.  
 Retrouvez le dépôt sur GitHub : [OmniTools](https://github.com/danbenba/OmniTools)
