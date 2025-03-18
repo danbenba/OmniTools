@@ -5,7 +5,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/Platform-Windows-blue.svg" alt="OmniTools">
-  <img src="https://img.shields.io/badge/Version-0.7-orange.svg" alt="OmniTools version">
+  <img src="https://img.shields.io/badge/Version-0.8-orange.svg" alt="OmniTools version">
   <img src="https://img.shields.io/badge/Language-C%23-%23239120" alt="C#">
   <img src="https://img.shields.io/badge/License-MIT-lightgrey.svg" alt="License">
 </p>
