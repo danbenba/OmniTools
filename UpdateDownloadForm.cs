@@ -153,12 +153,11 @@ namespace OmniTools
         private void CreateAndRunUpdateScript()
         {
             string batFilePath = Path.Combine(Path.GetTempPath(), "OmniTools_Updater.bat");
-            string batContent = $@"
-@echo off
+            string batContent = $@"@echo off
 ping 127.0.0.1 -n 2 > nul
 del ""{_currentExePath}""
 move ""{_tempExePath}"" ""{_currentExePath}""
-start """" ""{_currentExePath}""
+start "" ""{_currentExePath}""
 del ""%~f0""
 ";
 
