@@ -20,7 +20,7 @@ namespace OmniTools
         private TableLayoutPanel mainLayout;
         private TableLayoutPanel buttonLayout;
 
-        // Récupération des informations de version et de langue depuis la classe Program
+        // Récupération des infos de version et de langue depuis la classe Program
         string CurrentVersion = Program.Version;
         string Language = Program.Language;
 
