@@ -189,14 +189,13 @@ namespace OmniTools
             string batFilePath = Path.Combine(Path.GetTempPath(), "OmniTools_Updater.bat");
 
             // Temporisation pour permettre la fermeture de l’application
-            string batContent = $@"
-            @echo off
-            ping 127.0.0.1 -n 2 > nul
-            del ""{currentExePath}""
-            move ""{tempExePath}"" ""{currentExePath}""
-            start """" ""{currentExePath}""
-            del ""%~f0""
-            ";
+            string batContent = $@"@echo off
+ping 127.0.0.1 -n 2 > nul
+del ""{currentExePath}""
+move ""{tempExePath}"" ""{currentExePath}""
+start "" ""{currentExePath}""
+del ""%~f0""
+";
             File.WriteAllText(batFilePath, batContent);
 
             // On lance le script
